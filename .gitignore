@@ -4,6 +4,7 @@
 # Ignore generated files and binaries
 bin/
 gen/
+*.em
 
 # Ignore editor files
 *.swp
