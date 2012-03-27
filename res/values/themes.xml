@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="CompatibilityTheme" parent="@android:style/Theme.NoTitleBar">
+    <style name="CompatibilityTheme" parent="Theme.Sherlock.Light.DarkActionBar">
         <!-- Any customizations for your app running on pre-3.0 devices here -->
     </style>
 </resources>
