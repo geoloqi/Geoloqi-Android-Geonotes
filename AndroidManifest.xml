@@ -46,6 +46,11 @@
             android:label="@string/app_name">
         </activity>
         
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:label="@string/settings_title">
+        </activity>
+        
         <!-- Geoloqi SDK services, activities and receivers -->
         <service
             android:name="com.geoloqi.android.sdk.service.LQService"
