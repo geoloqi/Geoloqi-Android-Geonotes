@@ -59,6 +59,21 @@
     -->
     <import file="custom_rules.xml" optional="true" />
 
+    <!-- Run before -build to update the build file. -->
+    <target name="-pre-build">
+        <antcall target="-build-version" />
+    </target>
+
+    <!-- Run after -compile to do any cleanup. -->
+    <target name="-post-compile">
+        <!-- Revert the modified constants file to persist the replace tokens. -->
+        <exec executable="${git.path}" outputproperty="git.revision" failifexecutionfails="true" errorproperty="">
+            <arg value="checkout" />
+            <arg value="${file.geoloqi.build}" />
+        </exec>
+    </target>
+
+
     <!-- Import the actual build file.
 
          To customize existing targets, there are two options:
@@ -77,7 +92,50 @@
          In all cases you must update the value of version-tag below to read 'custom' instead of an integer,
          in order to avoid having your file be overridden by tools such as "android update project"
     -->
-    <!-- version-tag: 1 -->
+    <!-- version-tag: custom -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
 
+    <!-- Generate a version string for the jar file with the format:
+            12.050 (year and day within the year). -->
+    <tstamp>
+        <format
+            property="DAY_STAMP"
+            pattern="yy.DDD"
+            locale="en,US"/>
+    </tstamp>
+
+    <!-- The file to update with the version and build strings. -->
+    <property name="file.geoloqi.build" value="${source.absolute.dir}/com/geoloqi/android/Build.java" />
+
+    <!-- The path to the git executable. -->
+    <property name="git.path" value="/usr/bin/git" />
+
+    <!-- Determine if .git is available in the running directory. -->
+    <available file=".git" type="dir" property="git.present" />
+
+    <!-- Retrive the build version and update the constants source file. -->
+    <target name="-build-version" description="" if="git.present">
+        <exec executable="${git.path}" outputproperty="git.revision" failifexecutionfails="true" errorproperty="">
+            <arg value="rev-parse" />
+            <arg value="--verify" />
+            <arg value="HEAD" />
+        </exec>
+        <echo message="Repository version is ${git.revision}" />
+
+        <replace
+            file="${file.geoloqi.build}"
+            token="@version-token@"
+            value="${DAY_STAMP}"
+            failOnNoReplacements="true"
+            preserveLastModified="true"
+            summary="true" />
+
+        <replace
+            file="${file.geoloqi.build}"
+            token="@build-token@"
+            value="${git.revision}"
+            failOnNoReplacements="true"
+            preserveLastModified="true"
+            summary="true" />
+    </target>
 </project>
