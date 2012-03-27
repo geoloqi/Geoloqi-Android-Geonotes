@@ -33,7 +33,7 @@ import com.geoloqi.android.sdk.service.LQService.LQBinder;
 public class SettingsActivity extends PreferenceActivity implements OnPreferenceChangeListener,
         OnPreferenceClickListener {
     private static final String TAG = "SettingsActivity";
-    private static final String URL_PRIVACY_POLICY = "https://geoloqi.com/privacy";
+    private static final String URL_PRIVACY_POLICY = "https://geoloqi.com/privacy?utm_source=preferences&utm_medium=app&utm_campaign=android";
     
     /** An instance of the default SharedPreferences. */
     private SharedPreferences mPreferences;
