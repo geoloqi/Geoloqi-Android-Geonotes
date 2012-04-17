@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Geoloqi</string>
+    <string name="ongoing_notification_title">Geoloqi</string>
     
     <!-- Activity titles -->
     <string name="settings_title">Settings</string>
+    
+    <!-- Menu items -->
+    <string name="menu_settings_title">Settings</string>
     
     <!-- Preference category titles -->
     <string name="general_category_title">General</string>
