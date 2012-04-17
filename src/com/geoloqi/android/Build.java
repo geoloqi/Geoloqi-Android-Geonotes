@@ -8,9 +8,6 @@ package com.geoloqi.android;
  * @author Tristan Waddington
  */
 public class Build {
-    /** The human-readable version of the application. */
-    public static final String APP_VERSION = "@version-token@";
-    
     /** The build number for this version of the application. */
     public static final String APP_BUILD = "@build-token@";
 }
