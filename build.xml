@@ -95,15 +95,6 @@
     <!-- version-tag: custom -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
 
-    <!-- Generate a version string for the jar file with the format:
-            12.050 (year and day within the year). -->
-    <tstamp>
-        <format
-            property="DAY_STAMP"
-            pattern="yy.DDD"
-            locale="en,US"/>
-    </tstamp>
-
     <!-- The file to update with the version and build strings. -->
     <property name="file.geoloqi.build" value="${source.absolute.dir}/com/geoloqi/android/Build.java" />
 
@@ -121,14 +112,6 @@
             <arg value="HEAD" />
         </exec>
         <echo message="Repository version is ${git.revision}" />
-
-        <replace
-            file="${file.geoloqi.build}"
-            token="@version-token@"
-            value="${DAY_STAMP}"
-            failOnNoReplacements="true"
-            preserveLastModified="true"
-            summary="true" />
 
         <replace
             file="${file.geoloqi.build}"
