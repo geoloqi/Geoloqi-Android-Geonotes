@@ -150,24 +150,4 @@ public class LQLocationTest extends TestCase {
         assertEquals(cv.getAsString(LQContract.Fixes.FIX_CREATED_ON),
                         String.valueOf(lqLocation.getTime()));
     }
-    
-    /**
-     * Ensure the {@link LQLocation#isAccurate} method returns
-     * the expected result.
-     */
-    public void testIsAccurate() {
-        LQLocation lqLocation = new LQLocation(mLocation);
-        
-        if (Build.PRODUCT.equals("sdk")) {
-            // isAccurate should always return true when running on an emulator
-            assertTrue(lqLocation.isAccurate());
-        } else {
-            assertTrue(lqLocation.hasAccuracy());
-            assertTrue(lqLocation.getAccuracy() < LQLocation.MINIMUM_ACCURACY);
-            assertTrue(lqLocation.isAccurate());
-            
-            lqLocation.setAccuracy(LQLocation.MINIMUM_ACCURACY + 1);
-            assertFalse(lqLocation.isAccurate());
-        }
-    }
 }
