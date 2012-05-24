@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="geoloqi_orange_primary">#E37B2F</color>
+    <color name="geoloqi_orange_secondary">#F68E48</color>
+    <color name="geoloqi_orange_tertiary">#FFC994</color>
+    
+    <color name="geoloqi_blue_primary">#39AAE0</color>
+    <color name="geoloqi_blue_secondary">#27ADEC</color>
+    <color name="geoloqi_blue_tertiary">#B1E4FC</color>
+</resources>

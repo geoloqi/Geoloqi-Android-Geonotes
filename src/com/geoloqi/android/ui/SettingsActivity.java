@@ -1,9 +1,13 @@
 package com.geoloqi.android.ui;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -12,11 +16,12 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.geoloqi.android.Build;
 import com.geoloqi.android.R;
-import com.geoloqi.android.sdk.LQConstants;
+import com.geoloqi.android.sdk.LQBuild;
 import com.geoloqi.android.sdk.LQSession;
 import com.geoloqi.android.sdk.LQSharedPreferences;
 import com.geoloqi.android.sdk.LQTracker;
@@ -34,6 +39,8 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
         OnPreferenceClickListener {
     private static final String TAG = "SettingsActivity";
     private static final String URL_PRIVACY_POLICY = "https://geoloqi.com/privacy?utm_source=preferences&utm_medium=app&utm_campaign=android";
+    
+    private static String sAppVersion;
     
     /** An instance of the default SharedPreferences. */
     private SharedPreferences mPreferences;
@@ -75,13 +82,13 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
             // Display the account username
             preference = findPreference(getString(R.string.pref_key_account_username));
             if (preference != null) {
-                preference.setSummary(LQSharedPreferences.getAccountUsername(this));
+                preference.setSummary(LQSharedPreferences.getSessionUsername(this));
             }
             
             // Display the app version
             preference = findPreference(getString(R.string.pref_key_app_version));
             if (preference != null) {
-                preference.setSummary(Build.APP_VERSION);
+                preference.setSummary(getAppVersion(this));
             }
             
             // Display the app build
@@ -93,13 +100,13 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
             // Display the SDK version
             preference = findPreference(getString(R.string.pref_key_sdk_version));
             if (preference != null) {
-                preference.setSummary(LQConstants.LQ_SDK_VERSION);
+                preference.setSummary(LQBuild.LQ_SDK_VERSION);
             }
             
             // Display the SDK build
             preference = findPreference(getString(R.string.pref_key_sdk_build));
             if (preference != null) {
-                preference.setSummary(LQConstants.LQ_SDK_BUILD);
+                preference.setSummary(LQBuild.LQ_SDK_BUILD);
             }
         }
     }
@@ -155,10 +162,11 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
         if (key.equals(getString(R.string.pref_key_account_username))) {
             LQSession session = mService.getSession();
             if (session != null) {
-
                 if (session.isAnonymous()) {
                     // Start log-in Activity
-                    //startActivity(new Intent(this, AuthActivity.class));
+                    startActivity(new Intent(this, AuthActivity.class));
+                } else {
+                    // TODO: Sign-out!
                 }
             }
             consumed = true;
@@ -171,6 +179,20 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
             consumed = true;
         }
         return consumed;
+    }
+
+    /** Get the human-readable application version. */
+    public static String getAppVersion(Context context) {
+        if (TextUtils.isEmpty(sAppVersion)) {
+            PackageManager pm = context.getPackageManager();
+            try {
+                sAppVersion = pm.getPackageInfo(
+                        context.getPackageName(), 0).versionName;
+            } catch (NameNotFoundException e) {
+                // Pass
+            }
+        }
+        return sAppVersion;
     }
 
     /** Defines callbacks for service binding, passed to bindService() */

@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.geoloqi.android"
     android:versionCode="1"
-    android:versionName="1.0">
+    android:versionName="1.0.0">
     
     <!-- Build target -->
     <uses-sdk android:minSdkVersion="7" />
@@ -15,9 +15,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    
-    <!-- NOTE: This permission should not be included for most production applications. -->
-    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
     
     <!-- NOTE: These permissions are required if you wish to enable C2DM support in the Geoloqi SDK. -->
     <permission
@@ -47,9 +44,26 @@
         </activity>
         
         <activity
+            android:name=".ui.AuthActivity"
+            android:label="@string/app_name">
+        </activity>
+        
+        <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/settings_title">
         </activity>
+        
+        <receiver
+            android:name=".receiver.LocationBroadcastReceiver"
+            android:exported="false"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.geoloqi.android.sdk.action.TRACKER_PROFILE_CHANGED" />
+                <action android:name="com.geoloqi.android.sdk.action.LOCATION_CHANGED" />
+                <action android:name="com.geoloqi.android.sdk.action.LOCATION_UPLOADED" />
+                <action android:name="com.geoloqi.android.sdk.action.PUSH_MESSAGE_RECEIVED" />
+            </intent-filter>
+        </receiver>
         
         <!-- Geoloqi SDK services, activities and receivers -->
         <service
@@ -61,7 +75,7 @@
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <category android:name="com.geoloqi.android.sample" />
+                <category android:name="com.geoloqi.android" />
             </intent-filter>
         </receiver>
     </application>
