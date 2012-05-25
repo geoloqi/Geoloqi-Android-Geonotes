@@ -1,26 +1,40 @@
 package com.geoloqi.android.ui;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.Fragment;
+
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.Tab;
-import com.actionbarsherlock.app.ActionBar.TabListener;
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.ShareActionProvider;
 import com.geoloqi.android.R;
+import com.geoloqi.android.app.MainTabListener;
 import com.geoloqi.android.sdk.service.LQService;
+import com.geoloqi.android.sdk.service.LQService.LQBinder;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-
-/** Stub */
-public class MainActivity extends SherlockActivity implements TabListener {
+/**
+ * The main activity for the Geoloqi client application.
+ * 
+ * @author Tristan Waddington
+ */
+public class MainActivity extends SherlockFragmentActivity {
+    private static final String PARAM_TAB_INDEX = "tab_index";
+    
+    private LQService mService;
+    private boolean mBound;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        
+        // Note that setContentView is omitted because we use the root
+        // android.R.id.content as the container for each fragment.
         
         // Configure the ActionBar
         ActionBar actionBar = getSupportActionBar();
@@ -29,34 +43,65 @@ public class MainActivity extends SherlockActivity implements TabListener {
         // Configure our navigation
         ActionBar.Tab tab = actionBar.newTab();
         tab.setText("Activity");
-        tab.setTabListener(this);
+        tab.setTabListener(new MainTabListener<ActivityListFragment>(this,
+                "activity", ActivityListFragment.class));
         actionBar.addTab(tab);
         
         tab = actionBar.newTab();
         tab.setText("Layers");
-        tab.setTabListener(this);
+        tab.setTabListener(new MainTabListener<LayerListFragment>(this,
+                "layers", LayerListFragment.class));
         actionBar.addTab(tab);
         
         tab = actionBar.newTab();
         tab.setText("Privacy");
-        tab.setTabListener(this);
+        tab.setTabListener(new MainTabListener<Fragment>(this,
+                "privacy", Fragment.class));
         actionBar.addTab(tab);
+        
+        if (savedInstanceState != null) {
+            actionBar.setSelectedNavigationItem(
+                    savedInstanceState.getInt(PARAM_TAB_INDEX, 0));
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        
+        // Bind to the tracking service so we can call public methods on it
+        Intent intent = new Intent(this, LQService.class);
+        bindService(intent, mConnection, 0);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        
+        // Unbind from LQService
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        
+        ActionBar actionBar = getSupportActionBar();
+        
+        // Save the current tab state
+        outState.putInt(PARAM_TAB_INDEX,
+                actionBar.getSelectedNavigationIndex());
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        
         MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
-        
-        /*
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, "blah!");
-        ShareActionProvider p = (ShareActionProvider) menu.findItem(R.id.menu_share).getActionProvider();
-        p.setShareHistoryFileName(ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
-        p.setShareIntent(intent);
-        */
         
         return true;
     }
@@ -67,34 +112,57 @@ public class MainActivity extends SherlockActivity implements TabListener {
         case R.id.menu_settings:
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        /*
-        case: R.id.toggle_tracker:
-            Intent intent = new Intent(this, LQService.class);
-            if (!stopService(intent)) {
-                // Service was not running, start the service!
-                // ...
-            }
-            return true;
-            */
         }
         return false;
     }
 
-    @Override
-    public void onTabSelected(Tab tab, FragmentTransaction ft) {
-        // TODO Auto-generated method stub
-        
+    /** Get the bound instance of {@link LQService}. */
+    public LQService getService() {
+        return mService;
     }
 
-    @Override
-    public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-        // TODO Auto-generated method stub
-        
+    /** A basic callback interface for children of this Activity. */
+    public interface LQServiceConnection {
+        /**
+         * This callback will be run when the {@link MainActivity} has
+         * successfully bound to the {@link LQService}.
+         */
+        public void onServiceConnected(LQService service);
     }
 
-    @Override
-    public void onTabReselected(Tab tab, FragmentTransaction ft) {
-        // TODO Auto-generated method stub
-        
-    }
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            try {
+                // We've bound to LocalService, cast the IBinder and get LocalService instance.
+                LQBinder binder = (LQBinder) service;
+                mService = binder.getService();
+                mBound = true;
+                
+                // Notify the Fragments that the service has
+                // finished binding.
+                // TODO: Remove this logic once we implement a background
+                //       sync task.
+                FragmentManager fm = getSupportFragmentManager();
+                try {
+                    ((LQServiceConnection) fm.findFragmentByTag("activity")).onServiceConnected(mService);
+                } catch (NullPointerException e) {
+                    // Pass
+                }
+                try {
+                    ((LQServiceConnection) fm.findFragmentByTag("layers")).onServiceConnected(mService);
+                } catch (NullPointerException e) {
+                    // Pass
+                }
+            } catch (ClassCastException e) {
+                // Pass
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mBound = false;
+        }
+    };
 }
