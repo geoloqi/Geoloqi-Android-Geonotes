@@ -9,6 +9,10 @@
     <!-- Activity titles -->
     <string name="settings_title">Settings</string>
     
+    <!-- Fragments -->
+    <string name="empty_activity_list">Aw sad, you haven\'t received any messages yet!</string>
+    <string name="empty_layer_list">We couldn\'t find any layers.</string>
+    
     <!-- Menu items -->
     <string name="menu_settings_title">Settings</string>
     
