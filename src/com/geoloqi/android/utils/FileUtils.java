@@ -81,8 +81,50 @@ public class FileUtils {
     }
     
     /**
-     * Takes an {@link InputStream}, wraps it with a
-     * {@link BufferedInputStream} and writes the bytes to disk.
+     * Empty a directory, recursively deleting all children.
+     * 
+     * @param dir
+     * @return true if the directory was emptied; false if otherwise.
+     */
+    public static boolean emptyDirectory(File dir) {
+        if (dir.isDirectory()) {
+            for (String child : dir.list()) {
+                File file = new File(dir, child);
+                if (file.isDirectory()) {
+                    // Delete the directory
+                    deleteDirectory(file);
+                } else {
+                    // Delete file
+                    file.delete();
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Delete a directory and all of it's contents.
+     * 
+     * @param dir
+     * @return true if the directory was removed; false if otherwise;
+     */
+    public static boolean deleteDirectory(File dir) {
+        if (dir.isDirectory()) {
+            if (emptyDirectory(dir)) {
+                // Delete the directory
+                return dir.delete();
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * <p>Takes an {@link InputStream}, wraps it with a
+     * {@link BufferedInputStream} and writes the bytes to disk.</p>
+     * 
+     * <p>Note that this method will close the given InputStream when
+     * finished.</p>
      * 
      * @param file
      * @param inputStream
