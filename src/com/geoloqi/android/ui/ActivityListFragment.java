@@ -1,6 +1,7 @@
 package com.geoloqi.android.ui;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
@@ -67,8 +68,11 @@ public class ActivityListFragment extends ListFragment implements LQServiceConne
             return;
         }
         
+        HashMap<String, String> args = new HashMap<String, String>();
+        args.put("limit", "200");
+        
         LQSession session = service.getSession();
-        session.runGetRequest("timeline/messages", new OnRunApiRequestListener() {
+        session.runGetRequest("timeline/messages", args, null, new OnRunApiRequestListener() {
             @Override
             public void onSuccess(LQSession session, HttpResponse response) {
                 // Create our list adapter
