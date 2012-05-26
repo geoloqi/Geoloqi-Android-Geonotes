@@ -20,6 +20,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -48,7 +49,7 @@ public class LazyImageLoader {
     /** The singleton instance of the object. */
     private static LazyImageLoader sInstance;
     
-    /** The application context. */
+    /** The Activity context. */
     private final Context mContext;
     
     /** An instance of {@link ExecutorService} for loading images from disk. */
@@ -146,7 +147,7 @@ public class LazyImageLoader {
                     getImageFile(mUrl).getAbsolutePath(), sBitmapOptions);
             
             // Set the bitmap on the main thread
-            mHolder.image.post(new Runnable() {
+            ((Activity) mContext).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (mUrl.equals(mHolder.imageUrl)) {
@@ -186,7 +187,7 @@ public class LazyImageLoader {
         public void run() {
             try {
                 URI uri = URI.create(mUrl);
-                Log.d(TAG, String.format("Fetching image from '%s'", uri));
+                Log.d(TAG, String.format("Downloading image from '%s'", uri));
                 
                 // Build our request
                 HttpGet request = new HttpGet();
@@ -208,7 +209,7 @@ public class LazyImageLoader {
                             imageFile.getAbsolutePath(), sBitmapOptions);
                     
                     // Set the bitmap on the main thread
-                    mHolder.image.post(new Runnable() {
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if (mUrl.equals(mHolder.imageUrl)) {
