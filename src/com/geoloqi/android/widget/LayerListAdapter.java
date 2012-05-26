@@ -3,11 +3,15 @@ package com.geoloqi.android.widget;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.geoloqi.android.R;
 
 /**
  * This class is a simple implementation of ArrayAdapter and
@@ -16,16 +20,14 @@ import android.widget.TextView;
  * @author Tristan Waddington
  */
 public class LayerListAdapter extends ArrayAdapter<JSONObject> {
+    private LazyImageLoader mLazyLoader;
     private LayoutInflater mInflater;
     
-    /** A simple class to cache references to view resources. */
-    private static class ViewHolder {
-        public TextView name;
-        public TextView description;
-    }
-    
     public LayerListAdapter(Context context) {
-        super(context, android.R.layout.simple_list_item_2);
+        super(context, R.layout.simple_icon_list_item);
+        
+        // Get our lazy loader
+        mLazyLoader = LazyImageLoader.getInstance(context);
         
         // Get our layout inflater
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -33,27 +35,41 @@ public class LayerListAdapter extends ArrayAdapter<JSONObject> {
     
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final ViewHolder holder;
-
+        final ImageViewHolder holder;
+        
         if (convertView == null) {
             // Inflate our row layout
-            convertView = mInflater.inflate(android.R.layout.simple_list_item_2, parent, false);
-
+            convertView = mInflater.inflate(
+                    R.layout.simple_icon_list_item, parent, false);
+            
             // Cache the row elements for efficient retrieval
-            holder = new ViewHolder();
-            holder.name = (TextView) convertView.findViewById(android.R.id.text1);
-            holder.description = (TextView) convertView.findViewById(android.R.id.text2);
-
+            holder = new ImageViewHolder();
+            holder.text1 = (TextView) convertView.findViewById(R.id.text1);
+            holder.text2 = (TextView) convertView.findViewById(R.id.text2);
+            holder.image = (ImageView) convertView.findViewById(R.id.icon);
+            
             // Store the holder object on the row
             convertView.setTag(holder);
         } else {
-            holder = (ViewHolder) convertView.getTag();
+            holder = (ImageViewHolder) convertView.getTag();
         }
         
         // Populate our data
         JSONObject layer = getItem(position);
-        holder.name.setText(layer.optString("name"));
-        holder.description.setText(layer.optString("description"));
+        holder.imageUrl = layer.optString("icon");
+        holder.text1.setText(layer.optString("name"));
+        holder.text2.setText(layer.optString("description"));
+        
+        // Load the icon on a background thread
+        mLazyLoader.loadImage(holder);
+        
+        // Hide the description TextView if it is empty so
+        // the name field will be centered.
+        if (TextUtils.isEmpty(holder.text2.getText())) {
+            holder.text2.setVisibility(View.GONE);
+        } else {
+            holder.text2.setVisibility(View.VISIBLE);
+        }
         
         return convertView;
     }

@@ -14,8 +14,10 @@ import org.json.JSONObject;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.geoloqi.android.R;
 import com.geoloqi.android.sdk.LQException;
 import com.geoloqi.android.sdk.LQSession;
 import com.geoloqi.android.sdk.LQSession.OnRunApiRequestListener;
@@ -43,15 +45,12 @@ public class LayerListFragment extends SherlockListFragment implements LQService
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         
+        // Configure our ListView
+        ListView lv = getListView();
+        lv.setFastScrollEnabled(true);
+        
         // Set the default text
-        setEmptyText("No layers!");
-        
-        // Set the list adapter
-        mAdapter = new LayerListAdapter(getActivity());
-        setListAdapter(mAdapter);
-        
-        // Hide the list and display a loading indicator
-        setListShown(false);
+        setEmptyText(getString(R.string.empty_activity_list));
         
         LQService service = ((MainActivity) getActivity()).getService();
         if (service != null) {
@@ -63,23 +62,30 @@ public class LayerListFragment extends SherlockListFragment implements LQService
     public void onServiceConnected(LQService service) {
         LQSession session = service.getSession();
         
+        if (getListAdapter() != null) {
+            // Bail out if our list adapter has already
+            // been populated!
+            return;
+        }
+        
+        // TODO: Get the app layer_list!
         session.runGetRequest("layer/list", new OnRunApiRequestListener() {
             @Override
             public void onSuccess(LQSession session, HttpResponse response) {
-                Log.d(TAG, "onSuccess");
+                // Create our list adapter
+                mAdapter = new LayerListAdapter(getActivity());
                 
                 JSONObject obj;
                 try {
                     obj = new JSONObject(EntityUtils.toString(
                                     response.getEntity(), HTTP.UTF_8));
-                    Log.d(TAG, obj.toString());
                     
                     JSONArray array = obj.getJSONArray("layers");
                     
                     for (int i = 0; i < array.length(); i++) {
                         mAdapter.add(array.optJSONObject(i));
                     }
-                    setListShown(true);
+                    setListAdapter(mAdapter);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {

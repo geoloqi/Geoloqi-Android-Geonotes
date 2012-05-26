@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.geoloqi.android.R;
 import com.geoloqi.android.sdk.LQException;
 import com.geoloqi.android.sdk.LQSession;
 import com.geoloqi.android.sdk.LQSession.OnRunApiRequestListener;
@@ -21,6 +22,7 @@ import com.geoloqi.android.widget.ActivityListAdapter;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.widget.ListView;
 
 /**
  * An implementation of {@link ListFragment} for displaying
@@ -42,15 +44,12 @@ public class ActivityListFragment extends ListFragment implements LQServiceConne
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         
+        // Configure our ListView
+        ListView lv = getListView();
+        lv.setFastScrollEnabled(true);
+        
         // Set the default text
-        setEmptyText("You have no Activity!");
-        
-        // Set the list adapter
-        mAdapter = new ActivityListAdapter(getActivity());
-        setListAdapter(mAdapter);
-        
-        // Hide the list and display a loading indicator
-        setListShown(false);
+        setEmptyText(getString(R.string.empty_activity_list));
         
         LQService service = ((MainActivity) getActivity()).getService();
         if (service != null) {
@@ -62,26 +61,30 @@ public class ActivityListFragment extends ListFragment implements LQServiceConne
     public void onServiceConnected(LQService service) {
         Log.d(TAG, "onServiceConnected");
         
+        if (getListAdapter() != null) {
+            // Bail out if our list adapter has already
+            // been populated!
+            return;
+        }
+        
         LQSession session = service.getSession();
         session.runGetRequest("timeline/messages", new OnRunApiRequestListener() {
             @Override
             public void onSuccess(LQSession session, HttpResponse response) {
-                Log.d(TAG, "onSuccess");
+                // Create our list adapter
+                mAdapter = new ActivityListAdapter(getActivity());
                 
                 JSONObject obj;
                 try {
                     obj = new JSONObject(EntityUtils.toString(
                                     response.getEntity(), HTTP.UTF_8));
-                    Log.d(TAG, obj.toString());
-                    
-                    // items, paging {next_offset, limit, total}
                     
                     JSONArray array = obj.getJSONArray("items");
                     
                     for (int i = 0; i < array.length(); i++) {
                         mAdapter.add(array.optJSONObject(i));
                     }
-                    setListShown(true);
+                    setListAdapter(mAdapter);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
