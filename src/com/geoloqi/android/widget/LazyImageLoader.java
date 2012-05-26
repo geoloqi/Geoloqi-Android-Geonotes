@@ -60,12 +60,13 @@ public class LazyImageLoader {
     /** An instance of {@link ExecutorService} for downloading remote images. */
     private final ExecutorService mDownloadExecutor;
     
+    /** A {@link Set} of image URLs that are actively being downloaded. */
     private final Set<String> mInProgress;
     
     private LazyImageLoader(Context context) {
         mContext = context;
         mCacheExecutor = Executors.newCachedThreadPool();
-        mDownloadExecutor = Executors.newCachedThreadPool();
+        mDownloadExecutor = Executors.newFixedThreadPool(3);
         mInProgress = new CopyOnWriteArraySet<String>();
     }
     
