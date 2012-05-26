@@ -63,8 +63,13 @@ public class ActivityListAdapter extends ArrayAdapter<JSONObject> {
         
         holder.imageUrl = icon.optString("url");
         holder.text1.setText(object.optString("summary"));
-        holder.text2.setText(String.format("%s | %s",
-                location.optString("displayName"), actor.optString("displayName")));
+        
+        try {
+            holder.text2.setText(String.format("%s | %s",
+                    location.optString("displayName"), actor.optString("displayName")));
+        } catch (NullPointerException e) {
+            // Pass
+        }
         
         // Load the icon on a background thread
         mLazyLoader.loadImage(holder);
