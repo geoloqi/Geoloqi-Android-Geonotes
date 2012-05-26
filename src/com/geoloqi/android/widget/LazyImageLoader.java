@@ -6,6 +6,8 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -58,10 +60,13 @@ public class LazyImageLoader {
     /** An instance of {@link ExecutorService} for downloading remote images. */
     private final ExecutorService mDownloadExecutor;
     
+    private final Set<String> mInProgress;
+    
     private LazyImageLoader(Context context) {
         mContext = context;
         mCacheExecutor = Executors.newCachedThreadPool();
         mDownloadExecutor = Executors.newCachedThreadPool();
+        mInProgress = new CopyOnWriteArraySet<String>();
     }
     
     /**
@@ -87,11 +92,13 @@ public class LazyImageLoader {
      * @param holder
      */
     public void loadImage(final ImageViewHolder holder) {
-        // TODO: Verify download is not already in progress.
         if (isCached(holder.imageUrl)) {
             mCacheExecutor.execute(new ImageDecoder(holder));
         } else {
-            mDownloadExecutor.execute(new ImageDownload(holder));
+            if (!mInProgress.contains(holder.imageUrl)) {
+                mInProgress.add(holder.imageUrl);
+                mDownloadExecutor.execute(new ImageDownload(holder));
+            }
         }
     }
     
@@ -207,6 +214,9 @@ public class LazyImageLoader {
                     // Load the bitmap into memory
                     final Bitmap bitmap = BitmapFactory.decodeFile(
                             imageFile.getAbsolutePath(), sBitmapOptions);
+                    
+                    // Remove this URL from the in-progress set
+                    mInProgress.remove(mUrl);
                     
                     // Set the bitmap on the main thread
                     ((Activity) mContext).runOnUiThread(new Runnable() {
