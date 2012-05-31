@@ -3,7 +3,7 @@
     <style name="CompatibilityTheme" parent="Theme.Sherlock.Light.DarkActionBar">
         <!-- Any customizations for your app running on pre-3.0 devices here -->
     </style>
-    <style name="CompatibilityTheme.NoTitleBar.Fullscreen" parent="@android:style/Theme.NoTitleBar.Fullscreen">
+    <style name="CompatibilityTheme.NoTitleBar" parent="@android:style/Theme.NoTitleBar">
         <!-- Any customizations for your app running on devices with Theme.Holo.Light.DarkActionBar here -->
     </style>
 </resources>
