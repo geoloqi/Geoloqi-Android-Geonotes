@@ -1,12 +1,7 @@
 package com.geoloqi.android.ui;
 
-import java.io.IOException;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
+import org.apache.http.Header;
 import org.apache.http.StatusLine;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,27 +66,20 @@ public class LayerListFragment extends SherlockListFragment implements LQService
         // TODO: Get the app layer_list!
         session.runGetRequest("layer/list", new OnRunApiRequestListener() {
             @Override
-            public void onSuccess(LQSession session, HttpResponse response) {
+            public void onSuccess(LQSession session, JSONObject json,
+                    Header[] headers) {
                 // Create our list adapter
                 mAdapter = new LayerListAdapter(getActivity());
                 
-                JSONObject obj;
                 try {
-                    obj = new JSONObject(EntityUtils.toString(
-                                    response.getEntity(), HTTP.UTF_8));
-                    
-                    JSONArray array = obj.getJSONArray("layers");
+                    JSONArray array = json.getJSONArray("layers");
                     
                     for (int i = 0; i < array.length(); i++) {
                         mAdapter.add(array.optJSONObject(i));
                     }
                     setListAdapter(mAdapter);
-                } catch (ParseException e) {
-                    e.printStackTrace();
                 } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "Failed to parse the layer list!");
                 } catch (IllegalStateException e) {
                     // The Fragment was probably detached while the
                     // request was in-progress. We should cancel
@@ -105,7 +93,8 @@ public class LayerListFragment extends SherlockListFragment implements LQService
             }
             
             @Override
-            public void onComplete(LQSession session, HttpResponse response, StatusLine status) {
+            public void onComplete(LQSession session, JSONObject json,
+                    Header[] headers, StatusLine status) {
                 Log.d(TAG, "onComplete");
             }
         });

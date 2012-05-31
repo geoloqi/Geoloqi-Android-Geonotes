@@ -1,16 +1,17 @@
 package com.geoloqi.android.ui;
 
-import java.io.IOException;
 import java.util.HashMap;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
+import org.apache.http.Header;
 import org.apache.http.StatusLine;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.os.Bundle;
+import android.support.v4.app.ListFragment;
+import android.util.Log;
+import android.widget.ListView;
 
 import com.geoloqi.android.R;
 import com.geoloqi.android.sdk.LQException;
@@ -19,11 +20,6 @@ import com.geoloqi.android.sdk.LQSession.OnRunApiRequestListener;
 import com.geoloqi.android.sdk.service.LQService;
 import com.geoloqi.android.ui.MainActivity.LQServiceConnection;
 import com.geoloqi.android.widget.ActivityListAdapter;
-
-import android.os.Bundle;
-import android.support.v4.app.ListFragment;
-import android.util.Log;
-import android.widget.ListView;
 
 /**
  * An implementation of {@link ListFragment} for displaying
@@ -74,27 +70,20 @@ public class ActivityListFragment extends ListFragment implements LQServiceConne
         LQSession session = service.getSession();
         session.runGetRequest("timeline/messages", args, null, new OnRunApiRequestListener() {
             @Override
-            public void onSuccess(LQSession session, HttpResponse response) {
+            public void onSuccess(LQSession session, JSONObject json,
+                    Header[] headers) {
                 // Create our list adapter
                 mAdapter = new ActivityListAdapter(getActivity());
                 
-                JSONObject obj;
                 try {
-                    obj = new JSONObject(EntityUtils.toString(
-                                    response.getEntity(), HTTP.UTF_8));
-                    
-                    JSONArray array = obj.getJSONArray("items");
+                    JSONArray array = json.getJSONArray("items");
                     
                     for (int i = 0; i < array.length(); i++) {
                         mAdapter.add(array.optJSONObject(i));
                     }
                     setListAdapter(mAdapter);
-                } catch (ParseException e) {
-                    e.printStackTrace();
                 } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "Failed to parse the list of messages!", e);
                 } catch (IllegalStateException e) {
                     // The Fragment was probably detached while the
                     // request was in-progress. We should cancel
@@ -108,7 +97,8 @@ public class ActivityListFragment extends ListFragment implements LQServiceConne
             }
             
             @Override
-            public void onComplete(LQSession session, HttpResponse response, StatusLine status) {
+            public void onComplete(LQSession session, JSONObject json,
+                    Header[] headers, StatusLine status) {
                 Log.d(TAG, "onComplete");
             }
         });
