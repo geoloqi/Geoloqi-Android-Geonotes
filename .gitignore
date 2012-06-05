@@ -15,3 +15,6 @@ proguard.cfg
 
 # Ignore config files
 geoloqi.properties
+
+# Ignore local constants
+Constants.java
