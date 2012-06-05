@@ -232,6 +232,8 @@ public class LazyImageLoader {
                     Log.w(TAG, String.format(
                             "Image download failed with status: %s!", status));
                 }
+            } catch (IllegalStateException e) {
+                Log.w(TAG, "Failed to download image!", e);
             } catch (ClientProtocolException e) {
                 Log.w(TAG, "Failed to download image!", e);
             } catch (IOException e) {
