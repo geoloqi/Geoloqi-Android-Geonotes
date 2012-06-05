@@ -4,13 +4,10 @@
     <!-- Tracking preferences -->
     <PreferenceCategory
         android:title="@string/tracking_category_title">
-        <ListPreference
-            android:key="@string/pref_key_tracker_profile"
-            android:title="@string/tracker_profile_title"
-            android:enabled="true"
-            android:entries="@array/tracker_profile_entries"
-            android:entryValues="@array/tracker_profile_values"
-            android:defaultValue="0" />
+        <CheckBoxPreference
+            android:key="@string/pref_key_tracker_status"
+            android:title="@string/tracker_status_title"
+            android:defaultValue="true" />
     </PreferenceCategory>
     
     <!-- Account preferences -->

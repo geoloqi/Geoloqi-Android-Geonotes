@@ -1,11 +1,12 @@
 package com.geoloqi.android.ui;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
@@ -16,15 +17,14 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.geoloqi.android.Build;
 import com.geoloqi.android.R;
 import com.geoloqi.android.sdk.LQBuild;
 import com.geoloqi.android.sdk.LQSession;
 import com.geoloqi.android.sdk.LQSharedPreferences;
-import com.geoloqi.android.sdk.LQTracker;
 import com.geoloqi.android.sdk.LQTracker.LQTrackerProfile;
 import com.geoloqi.android.sdk.service.LQService;
 import com.geoloqi.android.sdk.service.LQService.LQBinder;
@@ -56,17 +56,20 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
         mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         
         // Set any preference listeners
-        Preference preference = findPreference(getString(R.string.pref_key_tracker_profile));
+        Preference preference = findPreference(
+                getString(R.string.pref_key_tracker_status));
         if (preference != null) {
             preference.setOnPreferenceChangeListener(this);
         }
         
-        preference = findPreference(getString(R.string.pref_key_account_username));
+        preference = findPreference(
+                getString(R.string.pref_key_account_username));
         if (preference != null) {
             preference.setOnPreferenceClickListener(this);
         }
         
-        preference = findPreference(getString(R.string.pref_key_privacy_policy));
+        preference = findPreference(
+                getString(R.string.pref_key_privacy_policy));
         if (preference != null) {
             preference.setOnPreferenceClickListener(this);
         }
@@ -134,22 +137,19 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
-        if (key != null) {
-            if (key.equals(getString(R.string.pref_key_tracker_profile))) {
-                // Check to see if the tracker can switch to the requested profile
+        if (key.equals(getString(R.string.pref_key_tracker_status))) {
+            boolean enableLocation = newValue.equals(true);
+            
+            if (enableLocation) {
+                startTracker(this);
+            } else {
+                // Stop the tracker
                 if (mBound && mService != null) {
-                    final LQTracker tracker = mService.getTracker();
-                    if (tracker != null) {
-                        int ordinal = Integer.parseInt((String) newValue);
-                        final LQTrackerProfile newProfile = LQTrackerProfile.values()[ordinal];
-                        if (!tracker.setProfile(newProfile)) {
-                            // Cannot switch to the indicated profile, don't update preferences!
-                            Toast.makeText(this, String.format("Unable to switch to profile %s.",
-                                            newProfile), Toast.LENGTH_SHORT).show();
-                            return false;
-                        }
-                    }
+                    mService.getTracker().setProfile(LQTrackerProfile.OFF);
                 }
+                
+                // Stop the service
+                stopService(new Intent(this, LQService.class));
             }
         }
         return true;
@@ -194,7 +194,38 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
         }
         return sAppVersion;
     }
-
+    
+    /** Start the background location service. */
+    public static void startTracker(Context c) {
+        Intent intent = new Intent(c, LQService.class);
+        intent.setAction(LQService.ACTION_FOREGROUND);
+        intent.putExtra(LQService.EXTRA_NOTIFICATION, getNotification(c));
+        c.startService(intent);
+    }
+    
+    /** Get the {@link PendingIntent} used by the service Notification. */
+    public static PendingIntent getPendingIntent(Context c) {
+        Intent intent = new Intent(c, SettingsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.setAction(Intent.ACTION_DEFAULT);
+        return PendingIntent.getActivity(c, 0, intent, 0);
+    }
+    
+    /** Get the {@link Notification} used by the foreground service. */
+    public static Notification getNotification(Context c) {
+        String contentText = c.getString(R.string.foreground_notification_text);
+        
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(c);
+        builder.setOnlyAlertOnce(true);
+        builder.setSmallIcon(R.drawable.ic_stat_notify);
+        builder.setTicker(contentText);
+        builder.setContentTitle(c.getString(R.string.app_name));
+        builder.setContentText(contentText);
+        builder.setContentIntent(getPendingIntent(c));
+        return builder.getNotification();
+    }
+    
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override

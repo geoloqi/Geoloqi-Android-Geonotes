@@ -39,20 +39,6 @@ public class LocationBroadcastReceiver extends LQBroadcastReceiver {
     @Override
     public void onTrackerProfileChanged(Context context,
             LQTrackerProfile oldProfile, LQTrackerProfile newProfile) {
-        String contentText;
-        if (newProfile.equals(LQTrackerProfile.OFF)) {
-            contentText = context.getString(R.string.notify_tracker_off);
-        } else {
-            contentText = context.getString(R.string.notify_tracker_on);
-        }
-        
-        // Update the foreground notification
-        Intent intent = new Intent(context, LQService.class);
-        intent.setAction(LQService.ACTION_UPDATE_NOTIFICATION);
-        intent.putExtra(LQService.EXTRA_CONTENT_TEXT,
-                contentText);
-        intent.putExtra(LQService.EXTRA_CONTENT_TITLE,
-                context.getString(R.string.app_name));
-        context.startService(intent);
+        // Pass
     }
 }

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Geoloqi</string>
+    <string name="app_name">Geonotes</string>
     
     <!-- Notification text -->
-    <string name="notify_tracker_on">Location services are enabled.</string>
-    <string name="notify_tracker_off">Location services are paused.</string>
+    <string name="foreground_notification_text">Select to disable the geonotes service.</string>
     
     <!-- Activity titles -->
     <string name="settings_title">Settings</string>
@@ -30,7 +29,7 @@
     <string name="about_category_title">About</string>
     
     <!-- Preference keys -->
-    <string name="pref_key_tracker_profile">tracker_profile</string>
+    <string name="pref_key_tracker_status">tracker_status</string>
     <string name="pref_key_account_username">account_username</string>
     <string name="pref_key_app_version">app_version</string>
     <string name="pref_key_app_build">app_build</string>
@@ -39,27 +38,13 @@
     <string name="pref_key_privacy_policy">privacy_policy</string>
     
     <!-- Preference titles -->
-    <string name="tracker_profile_title">Tracker profile</string>
+    <string name="tracker_status_title">Enable Location</string>
     <string name="username_title">Username</string>
     <string name="app_version_title">App version</string>
     <string name="app_build_title">App build</string>
     <string name="sdk_version_title">SDK version</string>
     <string name="sdk_build_title">SDK build</string>
     <string name="privacy_policy_title">Privacy Policy</string>
-    
-    <!-- Preference values -->
-    <string-array name="tracker_profile_entries">
-        <item>OFF</item>
-        <item>Passive</item>
-        <item>Logging</item>
-        <item>Real-time</item>
-    </string-array>
-    <string-array name="tracker_profile_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
     
     <!-- Default strings -->
     <string name="short_lorem">Lorem ipsum dolor sit amet</string>
