@@ -36,6 +36,10 @@ public class MainActivity extends SherlockFragmentActivity {
         // Note that setContentView is omitted because we use the root
         // android.R.id.content as the container for each fragment.
         
+        // Start up the tracking service
+        // TODO: Notify the user if GPS and/or WiFi is disabled!
+        SettingsActivity.startTracker(this);
+        
         // Configure the ActionBar
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -111,6 +115,9 @@ public class MainActivity extends SherlockFragmentActivity {
         switch(item.getItemId()) {
         case R.id.menu_settings:
             startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        case R.id.menu_create_geonote:
+            startActivity(new Intent(this, GeonoteActivity.class));
             return true;
         }
         return false;
