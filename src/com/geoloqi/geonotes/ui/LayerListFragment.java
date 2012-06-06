@@ -1,4 +1,4 @@
-package com.geoloqi.android.ui;
+package com.geoloqi.geonotes.ui;
 
 import org.apache.http.Header;
 import org.apache.http.StatusLine;
@@ -12,13 +12,13 @@ import android.util.Log;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
-import com.geoloqi.android.R;
 import com.geoloqi.android.sdk.LQException;
 import com.geoloqi.android.sdk.LQSession;
 import com.geoloqi.android.sdk.LQSession.OnRunApiRequestListener;
 import com.geoloqi.android.sdk.service.LQService;
-import com.geoloqi.android.ui.MainActivity.LQServiceConnection;
-import com.geoloqi.android.widget.LayerListAdapter;
+import com.geoloqi.geonotes.R;
+import com.geoloqi.geonotes.ui.MainActivity.LQServiceConnection;
+import com.geoloqi.geonotes.widget.LayerListAdapter;
 
 /**
  * An implementation of {@link ListFragment} for displaying

@@ -1,22 +1,22 @@
-package com.geoloqi.android.ui;
+package com.geoloqi.geonotes.ui;
 
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.geoloqi.android.R;
-import com.geoloqi.android.app.MainTabListener;
 import com.geoloqi.android.sdk.service.LQService;
 import com.geoloqi.android.sdk.service.LQService.LQBinder;
+import com.geoloqi.geonotes.R;
+import com.geoloqi.geonotes.app.MainTabListener;
 
 /**
  * The main activity for the Geoloqi client application.

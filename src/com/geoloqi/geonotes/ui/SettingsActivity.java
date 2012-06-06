@@ -1,4 +1,4 @@
-package com.geoloqi.android.ui;
+package com.geoloqi.geonotes.ui;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -20,14 +20,14 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 
-import com.geoloqi.android.Build;
-import com.geoloqi.android.R;
 import com.geoloqi.android.sdk.LQBuild;
 import com.geoloqi.android.sdk.LQSession;
 import com.geoloqi.android.sdk.LQSharedPreferences;
 import com.geoloqi.android.sdk.LQTracker.LQTrackerProfile;
 import com.geoloqi.android.sdk.service.LQService;
 import com.geoloqi.android.sdk.service.LQService.LQBinder;
+import com.geoloqi.geonotes.Build;
+import com.geoloqi.geonotes.R;
 
 /**
  * <p>This activity class is used to expose location tracking

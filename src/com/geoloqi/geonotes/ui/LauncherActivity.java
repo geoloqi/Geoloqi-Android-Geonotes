@@ -1,11 +1,11 @@
-package com.geoloqi.android.ui;
+package com.geoloqi.geonotes.ui;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.geoloqi.android.R;
+import com.geoloqi.geonotes.R;
 
 /**
  * This Activity is responsible for launching the Geoloqi client

@@ -1,4 +1,4 @@
-package com.geoloqi.android.widget;
+package com.geoloqi.geonotes.widget;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +28,7 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ListView;
 
-import com.geoloqi.android.utils.FileUtils;
+import com.geoloqi.geonotes.utils.FileUtils;
 
 /**
  * A lazy image loader class for downloading images on a background

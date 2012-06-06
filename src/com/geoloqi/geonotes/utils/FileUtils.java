@@ -1,4 +1,4 @@
-package com.geoloqi.android.utils;
+package com.geoloqi.geonotes.utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

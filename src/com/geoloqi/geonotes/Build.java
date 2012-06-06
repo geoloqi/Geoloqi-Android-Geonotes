@@ -1,4 +1,4 @@
-package com.geoloqi.android;
+package com.geoloqi.geonotes;
 
 /**
  * This class contains the current build information for the

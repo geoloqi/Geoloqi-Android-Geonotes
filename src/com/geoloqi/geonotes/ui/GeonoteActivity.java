@@ -1,10 +1,10 @@
-package com.geoloqi.android.ui;
+package com.geoloqi.geonotes.ui;
 
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 
-import com.geoloqi.android.Constants;
+import com.geoloqi.geonotes.Constants;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;

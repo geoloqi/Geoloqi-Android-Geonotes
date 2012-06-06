@@ -1,15 +1,11 @@
-package com.geoloqi.android.receiver;
+package com.geoloqi.geonotes.receiver;
 
 import android.content.Context;
-import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.geoloqi.android.R;
 import com.geoloqi.android.sdk.LQTracker.LQTrackerProfile;
 import com.geoloqi.android.sdk.receiver.LQBroadcastReceiver;
-import com.geoloqi.android.sdk.service.LQService;
 
 /**
  * An implementation of the abstract receiver

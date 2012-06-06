@@ -1,8 +1,6 @@
-package com.geoloqi.android.widget;
+package com.geoloqi.geonotes.widget;
 
 import org.json.JSONObject;
-
-import com.geoloqi.android.R;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -13,17 +11,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.geoloqi.geonotes.R;
+
 /**
  * This class is a simple implementation of ArrayAdapter and
  * should be used for displaying layer details in a list.
  * 
  * @author Tristan Waddington
  */
-public class ActivityListAdapter extends ArrayAdapter<JSONObject> {
+public class LayerListAdapter extends ArrayAdapter<JSONObject> {
     private LazyImageLoader mLazyLoader;
     private LayoutInflater mInflater;
     
-    public ActivityListAdapter(Context context) {
+    public LayerListAdapter(Context context) {
         super(context, R.layout.simple_icon_list_item);
         
         // Get our lazy loader
@@ -60,21 +60,10 @@ public class ActivityListAdapter extends ArrayAdapter<JSONObject> {
         holder.image.setImageDrawable(null);
         
         // Populate our data
-        JSONObject message = getItem(position);
-        JSONObject location = message.optJSONObject("location");
-        JSONObject object = message.optJSONObject("object");
-        JSONObject actor = message.optJSONObject("actor");
-        JSONObject icon = message.optJSONObject("icon");
-        
-        holder.imageUrl = icon.optString("url");
-        holder.text1.setText(object.optString("summary"));
-        
-        try {
-            holder.text2.setText(String.format("%s | %s",
-                    location.optString("displayName"), actor.optString("displayName")));
-        } catch (NullPointerException e) {
-            // Pass
-        }
+        JSONObject layer = getItem(position);
+        holder.imageUrl = layer.optString("icon");
+        holder.text1.setText(layer.optString("name"));
+        holder.text2.setText(layer.optString("description"));
         
         // Load the icon on a background thread
         mLazyLoader.loadImage(holder);

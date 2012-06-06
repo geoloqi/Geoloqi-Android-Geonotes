@@ -1,4 +1,4 @@
-package com.geoloqi.android.widget;
+package com.geoloqi.geonotes.widget;
 
 import android.widget.ImageView;
 import android.widget.ListView;

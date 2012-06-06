@@ -1,4 +1,4 @@
-package com.geoloqi.android.ui;
+package com.geoloqi.geonotes.ui;
 
 import java.util.HashMap;
 
@@ -13,13 +13,13 @@ import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.widget.ListView;
 
-import com.geoloqi.android.R;
 import com.geoloqi.android.sdk.LQException;
 import com.geoloqi.android.sdk.LQSession;
 import com.geoloqi.android.sdk.LQSession.OnRunApiRequestListener;
 import com.geoloqi.android.sdk.service.LQService;
-import com.geoloqi.android.ui.MainActivity.LQServiceConnection;
-import com.geoloqi.android.widget.ActivityListAdapter;
+import com.geoloqi.geonotes.R;
+import com.geoloqi.geonotes.ui.MainActivity.LQServiceConnection;
+import com.geoloqi.geonotes.widget.ActivityListAdapter;
 
 /**
  * An implementation of {@link ListFragment} for displaying
