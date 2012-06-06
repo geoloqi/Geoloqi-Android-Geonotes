@@ -73,6 +73,7 @@ public class ActivityListFragment extends ListFragment implements LQServiceConne
             public void onSuccess(LQSession session, JSONObject json,
                     Header[] headers) {
                 // Create our list adapter
+                // TODO: getActivity might return null.
                 mAdapter = new ActivityListAdapter(getActivity());
                 
                 try {

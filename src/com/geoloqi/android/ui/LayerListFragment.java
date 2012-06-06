@@ -69,6 +69,7 @@ public class LayerListFragment extends SherlockListFragment implements LQService
             public void onSuccess(LQSession session, JSONObject json,
                     Header[] headers) {
                 // Create our list adapter
+                // TODO: getActivity might return null.
                 mAdapter = new LayerListAdapter(getActivity());
                 
                 try {

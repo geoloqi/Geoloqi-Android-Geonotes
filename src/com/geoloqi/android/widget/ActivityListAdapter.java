@@ -54,6 +54,11 @@ public class ActivityListAdapter extends ArrayAdapter<JSONObject> {
             holder = (ImageViewHolder) convertView.getTag();
         }
         
+        // Reset our row values
+        holder.text1.setText("");
+        holder.text2.setText("");
+        holder.image.setImageDrawable(null);
+        
         // Populate our data
         JSONObject message = getItem(position);
         JSONObject location = message.optJSONObject("location");

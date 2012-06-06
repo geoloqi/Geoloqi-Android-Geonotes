@@ -214,14 +214,12 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
     
     /** Get the {@link Notification} used by the foreground service. */
     public static Notification getNotification(Context c) {
-        String contentText = c.getString(R.string.foreground_notification_text);
-        
         NotificationCompat.Builder builder = new NotificationCompat.Builder(c);
         builder.setOnlyAlertOnce(true);
         builder.setSmallIcon(R.drawable.ic_stat_notify);
-        builder.setTicker(contentText);
+        builder.setTicker(c.getString(R.string.foreground_notification_ticker));
         builder.setContentTitle(c.getString(R.string.app_name));
-        builder.setContentText(contentText);
+        builder.setContentText(c.getString(R.string.foreground_notification_text));
         builder.setContentIntent(getPendingIntent(c));
         return builder.getNotification();
     }

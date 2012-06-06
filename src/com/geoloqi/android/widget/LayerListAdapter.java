@@ -54,6 +54,11 @@ public class LayerListAdapter extends ArrayAdapter<JSONObject> {
             holder = (ImageViewHolder) convertView.getTag();
         }
         
+        // Reset our row values
+        holder.text1.setText("");
+        holder.text2.setText("");
+        holder.image.setImageDrawable(null);
+        
         // Populate our data
         JSONObject layer = getItem(position);
         holder.imageUrl = layer.optString("icon");
