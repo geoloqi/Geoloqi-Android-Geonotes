@@ -6,8 +6,6 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -54,20 +52,24 @@ public class LazyImageLoader {
     /** The Activity context. */
     private final Context mContext;
     
-    /** An instance of {@link ExecutorService} for loading images from disk. */
-    private final ExecutorService mCacheExecutor;
+    /** Our DefaultHttpClient instance. */
+    private final DefaultHttpClient mClient;
     
     /** An instance of {@link ExecutorService} for downloading remote images. */
     private final ExecutorService mDownloadExecutor;
     
-    /** A {@link Set} of image URLs that are actively being downloaded. */
-    private final Set<String> mInProgress;
-    
     private LazyImageLoader(Context context) {
         mContext = context;
-        mCacheExecutor = Executors.newCachedThreadPool();
-        mDownloadExecutor = Executors.newFixedThreadPool(3);
-        mInProgress = new CopyOnWriteArraySet<String>();
+        mClient = new DefaultHttpClient();
+        mDownloadExecutor = Executors.newSingleThreadExecutor();
+        
+        // Set default client parameters
+        HttpParams params = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(params,
+                HTTP_CONNECT_TIMEOUT);
+        HttpConnectionParams.setSoTimeout(params,
+                HTTP_SOCKET_TIMEOUT);
+        mClient.setParams(params);
     }
     
     /**
@@ -93,22 +95,7 @@ public class LazyImageLoader {
      * @param holder
      */
     public void loadImage(final ImageViewHolder holder) {
-        if (isCached(holder.imageUrl)) {
-            mCacheExecutor.execute(new ImageDecoder(holder));
-        } else {
-            if (!mInProgress.contains(holder.imageUrl)) {
-                mInProgress.add(holder.imageUrl);
-                mDownloadExecutor.execute(new ImageDownload(holder));
-            }
-        }
-    }
-    
-    /**
-     * Returns true if a cached image for the given url
-     * exists; false if otherwise.
-     */
-    private boolean isCached(String url) {
-        return getImageFile(url).exists();
+        mDownloadExecutor.execute(new ImageDownload(holder));
     }
     
     /**
@@ -135,109 +122,68 @@ public class LazyImageLoader {
     }
     
     /**
-     * A {@link Runnable} that will decode a {@link Bitmap} from
-     * the disk and update an ImageView.
-     * 
-     * @author Tristan Waddington
-     */
-    private class ImageDecoder implements Runnable {
-        private final ImageViewHolder mHolder;
-        private final String mUrl;
-        
-        public ImageDecoder(ImageViewHolder holder) {
-            mHolder = holder;
-            mUrl = holder.imageUrl;
-        }
-        
-        @Override
-        public void run() {
-            final Bitmap bitmap = BitmapFactory.decodeFile(
-                    getImageFile(mUrl).getAbsolutePath(), sBitmapOptions);
-            
-            // Set the bitmap on the main thread
-            ((Activity) mContext).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (mUrl.equals(mHolder.imageUrl)) {
-                        mHolder.image.setImageBitmap(bitmap);
-                    }
-                }
-            });
-        }
-    }
-    
-    /**
      * A {@link Runnable} that will download a remote image, cache
      * it to disk and, when finished, update an ImageView.
      * 
      * @author Tristan Waddington
      */
     private class ImageDownload implements Runnable {
-        private final DefaultHttpClient mClient;
         private final ImageViewHolder mHolder;
         private final String mUrl;
         
         public ImageDownload(ImageViewHolder holder) {
-            mClient = new DefaultHttpClient();
             mHolder = holder;
             mUrl = holder.imageUrl;
-            
-            // Set default client parameters
-            HttpParams params = new BasicHttpParams();
-            HttpConnectionParams.setConnectionTimeout(params,
-                    HTTP_CONNECT_TIMEOUT);
-            HttpConnectionParams.setSoTimeout(params, 
-                    HTTP_SOCKET_TIMEOUT);
-            mClient.setParams(params);
         }
         
         @Override
         public void run() {
             try {
-                URI uri = URI.create(mUrl);
-                Log.d(TAG, String.format("Downloading image from '%s'", uri));
+                // Get the path to the image on disk
+                File imageFile = getImageFile(mUrl);
                 
-                // Build our request
-                HttpGet request = new HttpGet();
-                request.setURI(uri);
-                
-                // Execute the request
-                HttpResponse response = mClient.execute(request);
-                StatusLine status = response.getStatusLine();
-                
-                if (status.getStatusCode() == HttpStatus.SC_OK) {
-                    HttpEntity entity = response.getEntity();
+                if (!imageFile.exists()) {
+                    URI uri = URI.create(mUrl);
+                    Log.d(TAG, String.format("Downloading image from '%s'", uri));
                     
-                    // Write the bitmap to disk
-                    File imageFile = getImageFile(mUrl);
-                    FileUtils.writeFileToDisk(imageFile, entity.getContent());
+                    // Build our request
+                    HttpGet request = new HttpGet();
+                    request.setURI(uri);
                     
-                    // Load the bitmap into memory
-                    final Bitmap bitmap = BitmapFactory.decodeFile(
-                            imageFile.getAbsolutePath(), sBitmapOptions);
+                    // Execute the request
+                    HttpResponse response = mClient.execute(request);
+                    StatusLine status = response.getStatusLine();
                     
-                    // Remove this URL from the in-progress set
-                    mInProgress.remove(mUrl);
-                    
-                    // Set the bitmap on the main thread
-                    ((Activity) mContext).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mUrl.equals(mHolder.imageUrl)) {
-                                mHolder.image.setImageBitmap(bitmap);
-                            }
-                        }
-                    });
-                } else {
-                    Log.w(TAG, String.format(
-                            "Image download failed with status: %s!", status));
+                    if (status.getStatusCode() == HttpStatus.SC_OK) {
+                        HttpEntity entity = response.getEntity();
+                        
+                        // Write the bitmap to disk
+                        FileUtils.writeFileToDisk(imageFile, entity.getContent());
+                    } else {
+                        Log.w(TAG, String.format(
+                                "Image download failed with status: %s!", status));
+                    }
                 }
+                
+                // Load the bitmap into memory
+                final Bitmap bitmap = BitmapFactory.decodeFile(
+                        imageFile.getAbsolutePath(), sBitmapOptions);
+                
+                // Set the bitmap on the main thread
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mUrl.equals(mHolder.imageUrl)) {
+                            mHolder.image.setImageBitmap(bitmap);
+                        }
+                    }
+                });
             } catch (IllegalStateException e) {
-                Log.w(TAG, "Failed to download image!", e);
+                Log.w(TAG, "Failed to download image!");
             } catch (ClientProtocolException e) {
-                Log.w(TAG, "Failed to download image!", e);
+                Log.w(TAG, "Failed to download image!");
             } catch (IOException e) {
-                Log.w(TAG, "Failed to download image!", e);
+                Log.w(TAG, "Failed to download image!");
             }
         }
     }
