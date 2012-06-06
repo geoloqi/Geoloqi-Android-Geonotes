@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -65,30 +66,32 @@ public class ActivityListFragment extends ListFragment implements LQServiceConne
         }
         
         HashMap<String, String> args = new HashMap<String, String>();
-        args.put("limit", "200");
+        args.put("limit", "50");
         
         LQSession session = service.getSession();
         session.runGetRequest("timeline/messages", args, null, new OnRunApiRequestListener() {
             @Override
             public void onSuccess(LQSession session, JSONObject json,
                     Header[] headers) {
-                // Create our list adapter
-                // TODO: getActivity might return null.
-                mAdapter = new ActivityListAdapter(getActivity());
-                
-                try {
-                    JSONArray array = json.getJSONArray("items");
+                Activity activity = getActivity();
+                if (activity != null) {
+                    // Create our list adapter
+                    mAdapter = new ActivityListAdapter(activity);
                     
-                    for (int i = 0; i < array.length(); i++) {
-                        mAdapter.add(array.optJSONObject(i));
+                    try {
+                        JSONArray array = json.getJSONArray("items");
+                        
+                        for (int i = 0; i < array.length(); i++) {
+                            mAdapter.add(array.optJSONObject(i));
+                        }
+                        setListAdapter(mAdapter);
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Failed to parse the list of messages!", e);
+                    } catch (IllegalStateException e) {
+                        // The Fragment was probably detached while the
+                        // request was in-progress. We should cancel
+                        // the request when this happens.
                     }
-                    setListAdapter(mAdapter);
-                } catch (JSONException e) {
-                    Log.e(TAG, "Failed to parse the list of messages!", e);
-                } catch (IllegalStateException e) {
-                    // The Fragment was probably detached while the
-                    // request was in-progress. We should cancel
-                    // the request when this happens.
                 }
             }
             

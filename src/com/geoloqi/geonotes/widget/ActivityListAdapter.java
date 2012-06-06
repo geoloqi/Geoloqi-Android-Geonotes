@@ -1,5 +1,6 @@
 package com.geoloqi.geonotes.widget;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
@@ -61,7 +62,6 @@ public class ActivityListAdapter extends ArrayAdapter<JSONObject> {
         
         // Populate our data
         JSONObject message = getItem(position);
-        JSONObject location = message.optJSONObject("location");
         JSONObject object = message.optJSONObject("object");
         JSONObject actor = message.optJSONObject("actor");
         JSONObject icon = message.optJSONObject("icon");
@@ -71,8 +71,8 @@ public class ActivityListAdapter extends ArrayAdapter<JSONObject> {
         
         try {
             holder.text2.setText(String.format("%s | %s",
-                    location.optString("displayName"), actor.optString("displayName")));
-        } catch (NullPointerException e) {
+                    message.getString("displayDate"), actor.getString("displayName")));
+        } catch (JSONException e) {
             // Pass
         }
         
