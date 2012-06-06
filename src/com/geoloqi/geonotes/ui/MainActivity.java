@@ -58,9 +58,9 @@ public class MainActivity extends SherlockFragmentActivity {
         actionBar.addTab(tab);
         
         tab = actionBar.newTab();
-        tab.setText("Privacy");
+        tab.setText("Geonotes");
         tab.setTabListener(new MainTabListener<Fragment>(this,
-                "privacy", Fragment.class));
+                "geonotes", Fragment.class));
         actionBar.addTab(tab);
         
         if (savedInstanceState != null) {
