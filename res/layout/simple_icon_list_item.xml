@@ -35,6 +35,8 @@
         android:layout_above="@id/text2"
         android:layout_alignWithParentIfMissing="true"
         android:gravity="center_vertical"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/app_name" />
+        android:text="@string/long_lorem" />
 </RelativeLayout>
