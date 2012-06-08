@@ -90,12 +90,10 @@ public class LayerListFragment extends SherlockListFragment implements LQService
                     }
                 }
             }
-            
             @Override
             public void onFailure(LQSession session, LQException e) {
                 Log.d(TAG, "onFailure");
             }
-            
             @Override
             public void onComplete(LQSession session, JSONObject json,
                     Header[] headers, StatusLine status) {
