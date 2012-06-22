@@ -13,8 +13,8 @@ import android.support.v4.app.DialogFragment;
  * @author Tristan Waddington
  */
 public class SimpleAlertDialogFragment extends DialogFragment {
-    private static final String EXTRA_TITLE = "com.geoloqi.geonotes.app.title";
-    private static final String EXTRA_MESSAGE = "com.geoloqi.geonotes.app.message";
+    private static final String EXTRA_TITLE = "com.geoloqi.geonotes.app.extra.TITLE";
+    private static final String EXTRA_MESSAGE = "com.geoloqi.geonotes.app.extra.MESSAGE";
 
     public static SimpleAlertDialogFragment newInstance(int title, int message) {
         SimpleAlertDialogFragment f = new SimpleAlertDialogFragment();
