@@ -3,8 +3,10 @@ package com.geoloqi.geonotes.ui;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
@@ -17,6 +19,7 @@ import com.geoloqi.android.sdk.service.LQService;
 import com.geoloqi.android.sdk.service.LQService.LQBinder;
 import com.geoloqi.geonotes.R;
 import com.geoloqi.geonotes.app.MainTabListener;
+import com.geoloqi.geonotes.app.SimpleAlertDialogFragment;
 
 /**
  * The main activity for the Geoloqi client application.
@@ -73,6 +76,17 @@ public class MainActivity extends SherlockFragmentActivity {
     @Override
     public void onResume() {
         super.onResume();
+        
+        // Get our location manager
+        LocationManager locationManager =
+                (LocationManager) getSystemService(LOCATION_SERVICE);
+        
+        // Notify the user if GPS is disabled
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            DialogFragment dialog = SimpleAlertDialogFragment.newInstance(
+                    R.string.dialog_gps_title, R.string.dialog_gps_message);
+            dialog.show(getSupportFragmentManager(), "gpsdialog");
+        }
         
         // Bind to the tracking service so we can call public methods on it
         Intent intent = new Intent(this, LQService.class);

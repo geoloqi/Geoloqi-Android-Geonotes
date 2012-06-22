@@ -6,6 +6,10 @@
     <string name="foreground_notification_ticker">Starting the Geonotes service.</string>
     <string name="foreground_notification_text">Select to disable the background service.</string>
     
+    <!-- Dialogs -->
+    <string name="dialog_gps_title">GPS is Disabled!</string>
+    <string name="dialog_gps_message">You should enable GPS to make sure your geonotes are received.</string>
+    
     <!-- Activity titles -->
     <string name="settings_title">Settings</string>
     
