@@ -37,8 +37,9 @@ public class MainActivity extends SherlockFragmentActivity {
         // android.R.id.content as the container for each fragment.
         
         // Start up the tracking service
-        // TODO: Notify the user if GPS and/or WiFi is disabled!
-        SettingsActivity.startTracker(this);
+        if (SettingsActivity.isTrackerEnabled(this)) {
+            SettingsActivity.startTracker(this);
+        }
         
         // Configure the ActionBar
         ActionBar actionBar = getSupportActionBar();

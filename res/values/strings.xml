@@ -3,8 +3,8 @@
     <string name="app_name">Geonotes</string>
     
     <!-- Notification text -->
-    <string name="foreground_notification_ticker">Geonotes service started.</string>
-    <string name="foreground_notification_text">Select to disable location updates.</string>
+    <string name="foreground_notification_ticker">Starting the Geonotes service.</string>
+    <string name="foreground_notification_text">Select to disable the background service.</string>
     
     <!-- Activity titles -->
     <string name="settings_title">Settings</string>
@@ -18,7 +18,7 @@
     
     <!-- Spinners -->
     <string-array name="layer_list">
-        <item>Owned</item>
+        <item>All</item>
         <item>Active</item>
         <item>Featured</item>
     </string-array>

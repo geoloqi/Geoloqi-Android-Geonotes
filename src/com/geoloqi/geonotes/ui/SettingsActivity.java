@@ -40,6 +40,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
     private static final String TAG = "SettingsActivity";
     private static final String URL_PRIVACY_POLICY = "https://geoloqi.com/privacy?utm_source=preferences&utm_medium=app&utm_campaign=android";
     
+    /** A cached reference of the application version from the manifest. */
     private static String sAppVersion;
     
     /** An instance of the default SharedPreferences. */
@@ -181,6 +182,14 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
         return consumed;
     }
 
+    /** Determine if the user has disabled the tracker. */
+    public static boolean isTrackerEnabled(Context context) {
+        SharedPreferences preferences = (SharedPreferences)
+                PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getBoolean(
+                context.getString(R.string.pref_key_tracker_status), true);
+    }
+
     /** Get the human-readable application version. */
     public static String getAppVersion(Context context) {
         if (TextUtils.isEmpty(sAppVersion)) {
@@ -215,6 +224,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
     /** Get the {@link Notification} used by the foreground service. */
     public static Notification getNotification(Context c) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(c);
+        builder.setWhen(0); // Don't display a timestamp on the notification!
         builder.setOnlyAlertOnce(true);
         builder.setSmallIcon(R.drawable.ic_stat_notify);
         builder.setTicker(c.getString(R.string.foreground_notification_ticker));
