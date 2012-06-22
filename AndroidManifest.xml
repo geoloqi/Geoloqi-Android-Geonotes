@@ -6,7 +6,7 @@
     android:versionName="1.0.0">
     
     <!-- Build target -->
-    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="15" />
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15" />
     
     <!-- Permissions required -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -50,6 +50,12 @@
         <activity
             android:name=".ui.GeonoteActivity"
             android:label="@string/app_name">
+        </activity>
+        
+        <activity
+            android:name=".ui.MessageDetailActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
         </activity>
         
         <activity

@@ -1,7 +1,5 @@
 package com.geoloqi.geonotes.ui;
 
-import java.util.HashMap;
-
 import org.apache.http.Header;
 import org.apache.http.StatusLine;
 import org.json.JSONArray;
@@ -9,9 +7,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.geoloqi.android.sdk.LQException;
@@ -28,7 +30,8 @@ import com.geoloqi.geonotes.widget.ActivityListAdapter;
  * 
  * @author Tristan Waddington
  */
-public class ActivityListFragment extends ListFragment implements LQServiceConnection {
+public class ActivityListFragment extends ListFragment implements
+        OnItemClickListener, LQServiceConnection {
     private static final String TAG = "ActivityListFragment";
     
     private ActivityListAdapter mAdapter;
@@ -45,6 +48,7 @@ public class ActivityListFragment extends ListFragment implements LQServiceConne
         // Configure our ListView
         ListView lv = getListView();
         lv.setFastScrollEnabled(true);
+        lv.setOnItemClickListener(this);
         
         // Set the default text
         setEmptyText(getString(R.string.empty_activity_list));
@@ -53,6 +57,16 @@ public class ActivityListFragment extends ListFragment implements LQServiceConne
         if (service != null) {
             onServiceConnected(service);
         }
+    }
+    
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        JSONObject json = mAdapter.getItem(position);
+        
+        // Start our message detail activity
+        Intent intent = new Intent(getActivity(), MessageDetailActivity.class);
+        intent.putExtra(MessageDetailActivity.EXTRA_JSON, json.toString());
+        startActivity(intent);
     }
     
     @Override
@@ -65,11 +79,8 @@ public class ActivityListFragment extends ListFragment implements LQServiceConne
             return;
         }
         
-        HashMap<String, String> args = new HashMap<String, String>();
-        args.put("limit", "50");
-        
         LQSession session = service.getSession();
-        session.runGetRequest("timeline/messages", args, null, new OnRunApiRequestListener() {
+        session.runGetRequest("timeline/messages", new OnRunApiRequestListener() {
             @Override
             public void onSuccess(LQSession session, JSONObject json,
                     Header[] headers) {
@@ -94,12 +105,10 @@ public class ActivityListFragment extends ListFragment implements LQServiceConne
                     }
                 }
             }
-            
             @Override
             public void onFailure(LQSession session, LQException e) {
                 Log.d(TAG, "onFailure");
             }
-            
             @Override
             public void onComplete(LQSession session, JSONObject json,
                     Header[] headers, StatusLine status) {
