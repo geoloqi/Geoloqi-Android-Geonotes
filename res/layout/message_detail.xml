@@ -26,7 +26,7 @@
                 android:orientation="vertical"
                 android:padding="20dp">
                 <TextView
-                    android:id="@+id/actor_name"
+                    android:id="@+id/location_name"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"

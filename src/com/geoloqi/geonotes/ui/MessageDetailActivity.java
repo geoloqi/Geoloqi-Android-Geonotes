@@ -63,9 +63,9 @@ public class MessageDetailActivity extends SherlockActivity {
             JSONObject object = mMessage.getJSONObject("object");
             
             // Display our location name
-            TextView nameView = (TextView) findViewById(R.id.actor_name);
+            TextView nameView = (TextView) findViewById(R.id.location_name);
             if (nameView != null) {
-                nameView.setText(actor.optString("displayName"));
+                nameView.setText(location.optString("displayName"));
             }
             
             // Display our summary text
