@@ -12,6 +12,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -64,6 +65,12 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
         }
         
         preference = findPreference(
+                getString(R.string.pref_key_vibrate));
+        if (preference != null) {
+            preference.setOnPreferenceChangeListener(this);
+        }
+        
+        preference = findPreference(
                 getString(R.string.pref_key_account_username));
         if (preference != null) {
             preference.setOnPreferenceClickListener(this);
@@ -82,6 +89,13 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
         
         if (mPreferences != null) {
             Preference preference = null;
+            CheckBoxPreference checkboxPreference =
+                    (CheckBoxPreference) findPreference(getString(R.string.pref_key_vibrate));
+            
+            // Display the vibrate preference
+            if (checkboxPreference != null) {
+                checkboxPreference.setChecked(LQSharedPreferences.shouldVibrate(this));
+            }
             
             // Display the account username
             preference = findPreference(getString(R.string.pref_key_account_username));
@@ -141,16 +155,30 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
         if (key.equals(getString(R.string.pref_key_tracker_status))) {
             boolean enableLocation = newValue.equals(true);
             
+            CheckBoxPreference startOnBoot =
+                    (CheckBoxPreference) findPreference(getString(R.string.pref_key_start_on_boot));
+            
             if (enableLocation) {
+                // Start the service
                 startTracker(this);
-            } else {
-                // Stop the tracker
-                if (mBound && mService != null) {
-                    mService.getTracker().setProfile(LQTrackerProfile.OFF);
-                }
                 
+                // Enable the start on boot option
+                startOnBoot.setEnabled(true);
+            } else {
                 // Stop the service
                 stopService(new Intent(this, LQService.class));
+                
+                // Disable the start on boot option
+                startOnBoot.setEnabled(false);
+                startOnBoot.setChecked(false);
+            }
+        } else if (key.equals(getString(R.string.pref_key_vibrate))) {
+            boolean shouldVibrate = newValue.equals(true);
+            
+            if (shouldVibrate) {
+                LQSharedPreferences.enableVibration(this);
+            } else {
+                LQSharedPreferences.disableVibration(this);
             }
         }
         return true;
@@ -190,6 +218,14 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
                 context.getString(R.string.pref_key_tracker_status), true);
     }
 
+    /** Determine if the user has asked the tracker to be started on boot. */
+    public static boolean isStartOnBootEnabled(Context context) {
+        SharedPreferences preferences = (SharedPreferences)
+                PreferenceManager.getDefaultSharedPreferences(context);
+        return isTrackerEnabled(context) && preferences.getBoolean(
+                context.getString(R.string.pref_key_start_on_boot), false);
+    }
+
     /** Get the human-readable application version. */
     public static String getAppVersion(Context context) {
         if (TextUtils.isEmpty(sAppVersion)) {
@@ -210,6 +246,12 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
         intent.setAction(LQService.ACTION_FOREGROUND);
         intent.putExtra(LQService.EXTRA_NOTIFICATION, getNotification(c));
         c.startService(intent);
+        
+        // Ensure the tracker is always in the correct profile
+        Intent profileIntent = new Intent(c, LQService.class);
+        profileIntent.setAction(LQService.ACTION_SET_TRACKER_PROFILE);
+        profileIntent.putExtra(LQService.EXTRA_PROFILE, LQTrackerProfile.ADAPTIVE);
+        c.startService(profileIntent);
     }
     
     /** Get the {@link PendingIntent} used by the service Notification. */

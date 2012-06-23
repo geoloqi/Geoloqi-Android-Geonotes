@@ -30,11 +30,14 @@
     <!-- Preference category titles -->
     <string name="general_category_title">General</string>
     <string name="tracking_category_title">Location</string>
+    <string name="notification_category_title">Notifications</string>
     <string name="account_category_title">Account</string>
     <string name="about_category_title">About</string>
     
     <!-- Preference keys -->
     <string name="pref_key_tracker_status">tracker_status</string>
+    <string name="pref_key_start_on_boot">start_on_boot</string>
+    <string name="pref_key_vibrate">vibrate</string>
     <string name="pref_key_account_username">account_username</string>
     <string name="pref_key_app_version">app_version</string>
     <string name="pref_key_app_build">app_build</string>
@@ -43,13 +46,19 @@
     <string name="pref_key_privacy_policy">privacy_policy</string>
     
     <!-- Preference titles -->
-    <string name="tracker_status_title">Enable Location</string>
+    <string name="tracker_status_title">Enable location</string>
+    <string name="start_on_boot_title">Enable on reboot</string>
+    <string name="vibrate_title">Vibrate</string>
     <string name="username_title">Username</string>
     <string name="app_version_title">App version</string>
     <string name="app_build_title">App build</string>
     <string name="sdk_version_title">SDK version</string>
     <string name="sdk_build_title">SDK build</string>
     <string name="privacy_policy_title">Privacy Policy</string>
+    
+    <!-- Preference summaries -->
+    <string name="start_on_boot_summary">Start the location service automatically</string>
+    <string name="vibrate_summary">Vibrate when new items arrive</string>
     
     <!-- Default strings -->
     <string name="short_lorem">Lorem ipsum dolor sit amet</string>

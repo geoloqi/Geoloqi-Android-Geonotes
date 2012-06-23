@@ -8,6 +8,22 @@
             android:key="@string/pref_key_tracker_status"
             android:title="@string/tracker_status_title"
             android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="@string/pref_key_start_on_boot"
+            android:title="@string/start_on_boot_title"
+            android:summary="@string/start_on_boot_summary"
+            android:defaultValue="false" />
+    </PreferenceCategory>
+    
+    <!-- Notification preferences -->
+    <PreferenceCategory
+        android:title="@string/notification_category_title">
+        <CheckBoxPreference
+            android:key="@string/pref_key_vibrate"
+            android:title="@string/vibrate_title"
+            android:summary="@string/vibrate_summary"
+            android:persistent="false"
+            android:defaultValue="false" />
     </PreferenceCategory>
     
     <!-- Account preferences -->
@@ -15,8 +31,7 @@
         android:title="@string/account_category_title">
         <Preference
             android:key="@string/pref_key_account_username"
-            android:title="@string/username_title"
-            android:label="@null" />
+            android:title="@string/username_title" />
     </PreferenceCategory>
     
     <!-- About preferences -->
@@ -24,27 +39,22 @@
         android:title="@string/about_category_title">
         <Preference
             android:key="@string/pref_key_privacy_policy"
-            android:title="@string/privacy_policy_title"
-            android:label="@null" />
+            android:title="@string/privacy_policy_title" />
         <Preference
             android:key="@string/pref_key_app_version"
             android:title="@string/app_version_title"
-            android:label="@null"
             android:enabled="false" />
         <Preference
             android:key="@string/pref_key_app_build"
             android:title="@string/app_build_title"
-            android:label="@null"
             android:enabled="false" />
         <Preference
             android:key="@string/pref_key_sdk_version"
             android:title="@string/sdk_version_title"
-            android:label="@null"
             android:enabled="false" />
         <Preference
             android:key="@string/pref_key_sdk_build"
             android:title="@string/sdk_build_title"
-            android:label="@null"
             android:enabled="false" />
         </PreferenceCategory>
 </PreferenceScreen>
