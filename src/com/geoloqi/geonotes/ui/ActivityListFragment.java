@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.SherlockListFragment;
 import com.geoloqi.android.sdk.LQException;
 import com.geoloqi.android.sdk.LQSession;
 import com.geoloqi.android.sdk.LQSession.OnRunApiRequestListener;
@@ -30,7 +31,7 @@ import com.geoloqi.geonotes.widget.ActivityListAdapter;
  * 
  * @author Tristan Waddington
  */
-public class ActivityListFragment extends ListFragment implements
+public class ActivityListFragment extends SherlockListFragment implements
         OnItemClickListener, LQServiceConnection {
     private static final String TAG = "ActivityListFragment";
     

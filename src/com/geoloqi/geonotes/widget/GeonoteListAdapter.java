@@ -58,6 +58,8 @@ public class GeonoteListAdapter extends ArrayAdapter<JSONObject> {
         // Populate our data
         JSONObject geonote = getItem(position);
         holder.text1.setText(geonote.optString("text"));
+        
+        // TODO: 6 minutes ago | Rose Test Garden
         holder.text2.setText(geonote.optString("place_name"));
         
         // Hide the description TextView if it is empty so
