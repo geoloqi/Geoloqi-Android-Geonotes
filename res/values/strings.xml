@@ -2,6 +2,10 @@
 <resources>
     <string name="app_name">Geonotes</string>
     
+    <!-- Button text -->
+    <string name="sign_up_button">Sign Up</string>
+    <string name="sign_in_button">Sign In</string>
+    
     <!-- Notification text -->
     <string name="foreground_notification_ticker">Starting the Geonotes service.</string>
     <string name="foreground_notification_text">Select to disable the background service.</string>
@@ -60,6 +64,9 @@
     <!-- Preference summaries -->
     <string name="start_on_boot_summary">Start the location service automatically</string>
     <string name="vibrate_summary">Vibrate when new items arrive</string>
+    
+    <!-- Misc. copy -->
+    <string name="anonymous_account_message">You\'re using Geoloqi anonymously. Tap here to sign up.</string>
     
     <!-- Default strings -->
     <string name="short_lorem">Lorem ipsum dolor sit amet</string>

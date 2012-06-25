@@ -7,14 +7,18 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.geoloqi.android.sdk.LQSharedPreferences;
 import com.geoloqi.android.sdk.service.LQService;
 import com.geoloqi.android.sdk.service.LQService.LQBinder;
 import com.geoloqi.geonotes.R;
@@ -26,7 +30,8 @@ import com.geoloqi.geonotes.app.SimpleAlertDialogFragment;
  * 
  * @author Tristan Waddington
  */
-public class MainActivity extends SherlockFragmentActivity {
+public class MainActivity extends SherlockFragmentActivity implements OnClickListener {
+    private static final String TAG = "MainActivity";
     private static final String PARAM_TAB_INDEX = "tab_index";
     
     private LQService mService;
@@ -36,8 +41,8 @@ public class MainActivity extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // Note that setContentView is omitted because we use the root
-        // android.R.id.content as the container for each fragment.
+        // Define our activity layout
+        setContentView(R.layout.main);
         
         // Start up the tracking service
         if (SettingsActivity.isTrackerEnabled(this)) {
@@ -71,6 +76,12 @@ public class MainActivity extends SherlockFragmentActivity {
             actionBar.setSelectedNavigationItem(
                     savedInstanceState.getInt(PARAM_TAB_INDEX, 0));
         }
+        
+        // Wire up our onclick handlers
+        Button signUpButton = (Button) findViewById(R.id.sign_up_button);
+        if (signUpButton != null) {
+            signUpButton.setOnClickListener(this);
+        }
     }
 
     @Override
@@ -91,6 +102,14 @@ public class MainActivity extends SherlockFragmentActivity {
         // Bind to the tracking service so we can call public methods on it
         Intent intent = new Intent(this, LQService.class);
         bindService(intent, mConnection, 0);
+        
+        // Prompt anonymous users to register
+        if (LQSharedPreferences.getSessionIsAnonymous(this)) {
+            View authNotice = findViewById(R.id.auth_notice);
+            if (authNotice != null) {
+                authNotice.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     @Override
@@ -136,6 +155,16 @@ public class MainActivity extends SherlockFragmentActivity {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+        case R.id.sign_up_button:
+            // TODO: Implement the register activity!
+            Log.d(TAG, "Sign Up!");
+            break;
+        }
     }
 
     /** Get the bound instance of {@link LQService}. */
