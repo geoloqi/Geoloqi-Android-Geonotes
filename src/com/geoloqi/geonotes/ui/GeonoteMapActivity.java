@@ -10,8 +10,8 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 
-public class GeonoteActivity extends MapActivity {
-    private static final String TAG = "GeonoteActivity";
+public class GeonoteMapActivity extends MapActivity {
+    private static final String TAG = "GeonoteMapActivity";
     
     /** The default zoom level to display. */
     private static final int DEFAULT_ZOOM_LEVEL = 15;

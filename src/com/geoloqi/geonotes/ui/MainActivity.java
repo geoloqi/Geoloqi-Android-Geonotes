@@ -151,7 +151,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         case R.id.menu_create_geonote:
-            startActivity(new Intent(this, GeonoteActivity.class));
+            startActivity(new Intent(this, GeonoteMapActivity.class));
             return true;
         }
         return false;
