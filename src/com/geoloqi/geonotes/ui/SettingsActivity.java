@@ -1,7 +1,5 @@
 package com.geoloqi.geonotes.ui;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +16,6 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 
 import com.geoloqi.android.sdk.LQBuild;
@@ -243,8 +240,6 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
     /** Start the background location service. */
     public static void startTracker(Context c) {
         Intent intent = new Intent(c, LQService.class);
-        intent.setAction(LQService.ACTION_FOREGROUND);
-        intent.putExtra(LQService.EXTRA_NOTIFICATION, getNotification(c));
         c.startService(intent);
         
         // Ensure the tracker is always in the correct profile
@@ -252,28 +247,6 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
         profileIntent.setAction(LQService.ACTION_SET_TRACKER_PROFILE);
         profileIntent.putExtra(LQService.EXTRA_PROFILE, LQTrackerProfile.ADAPTIVE);
         c.startService(profileIntent);
-    }
-    
-    /** Get the {@link PendingIntent} used by the service Notification. */
-    public static PendingIntent getPendingIntent(Context c) {
-        Intent intent = new Intent(c, SettingsActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.setAction(Intent.ACTION_DEFAULT);
-        return PendingIntent.getActivity(c, 0, intent, 0);
-    }
-    
-    /** Get the {@link Notification} used by the foreground service. */
-    public static Notification getNotification(Context c) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(c);
-        builder.setWhen(0); // Don't display a timestamp on the notification!
-        builder.setOnlyAlertOnce(true);
-        builder.setSmallIcon(R.drawable.ic_stat_notify);
-        builder.setTicker(c.getString(R.string.foreground_notification_ticker));
-        builder.setContentTitle(c.getString(R.string.app_name));
-        builder.setContentText(c.getString(R.string.foreground_notification_text));
-        builder.setContentIntent(getPendingIntent(c));
-        return builder.getNotification();
     }
     
     /** Defines callbacks for service binding, passed to bindService() */
