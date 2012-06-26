@@ -223,7 +223,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
         SharedPreferences preferences = (SharedPreferences)
                 PreferenceManager.getDefaultSharedPreferences(context);
         return isTrackerEnabled(context) && preferences.getBoolean(
-                context.getString(R.string.pref_key_start_on_boot), false);
+                context.getString(R.string.pref_key_start_on_boot), true);
     }
 
     /** Get the human-readable application version. */

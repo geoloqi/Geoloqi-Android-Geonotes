@@ -12,7 +12,7 @@
             android:key="@string/pref_key_start_on_boot"
             android:title="@string/start_on_boot_title"
             android:summary="@string/start_on_boot_summary"
-            android:defaultValue="false" />
+            android:defaultValue="true" />
     </PreferenceCategory>
     
     <!-- Notification preferences -->
