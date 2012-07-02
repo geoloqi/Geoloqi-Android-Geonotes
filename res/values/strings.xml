@@ -66,7 +66,7 @@
     <string name="vibrate_summary">Vibrate when new items arrive</string>
     
     <!-- Misc. copy -->
-    <string name="anonymous_account_message">You\'re using Geoloqi anonymously. Tap here to sign up.</string>
+    <string name="anonymous_account_message">Tap here to create a Geoloqi account.</string>
     
     <!-- Default strings -->
     <string name="short_lorem">Lorem ipsum dolor sit amet</string>
