@@ -63,15 +63,13 @@ public class ActivityListAdapter extends ArrayAdapter<JSONObject> {
         // Populate our data
         JSONObject message = getItem(position);
         JSONObject object = message.optJSONObject("object");
-        JSONObject actor = message.optJSONObject("actor");
         JSONObject icon = message.optJSONObject("icon");
         
         holder.imageUrl = icon.optString("url");
         holder.text1.setText(object.optString("summary"));
         
         try {
-            holder.text2.setText(String.format("%s | %s",
-                    message.getString("displayDate"), actor.getString("displayName")));
+            holder.text2.setText(message.getString("displayDate"));
         } catch (JSONException e) {
             // Pass
         }
