@@ -14,14 +14,18 @@ import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -42,8 +46,6 @@ public class MessageDetailActivity extends SherlockActivity {
     private static final String MARKER_IMAGE_URL =
             "http://geoloqi.s3.amazonaws.com/markers/single/marker-images/image.png";
 
-    private static final int STATIC_MAP_WIDTH = 800;
-    private static final int STATIC_MAP_HEIGHT = 250;
     private static final int STATIC_MAP_SCALE = 1;
 
     private JSONObject mMessage;
@@ -84,8 +86,9 @@ public class MessageDetailActivity extends SherlockActivity {
             // Display our static map
             ImageButton mapView = (ImageButton) findViewById(R.id.static_map);
             if (mapView != null) {
-                new LoadStaticMapTask(this, mapView, location.getString("latitude"),
-                        location.getString("longitude")).execute();
+                String url = getStaticMapUrl(location.getString("latitude"),
+                        location.getString("longitude"));
+                new LoadStaticMapTask(this, mapView, url).execute();
             }
         } catch (JSONException e) {
             Log.e(TAG, "Failed to parse message data!");
@@ -99,12 +102,27 @@ public class MessageDetailActivity extends SherlockActivity {
      * @param lat
      * @param lng
      */
-    private static String getStaticMapUrl(String lat, String lng) {
+    @TargetApi(13)
+    private String getStaticMapUrl(String lat, String lng) {
+        int width = 0;
+        int height = 0;
+        
+        Display display = getWindowManager().getDefaultDisplay();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            Point p = new Point();
+            display.getSize(p);
+            width = p.x;
+            height = width / 2;
+        } else {
+            width = display.getWidth();
+            height = width / 2;
+        }
+        
         // Really wish there was a decent URL formatter
         // in the Android standard library.
         String url = "https://maps.google.com/maps/api/staticmap?" +
                 "sensor=true&maptype=roadmap" +
-                String.format("&size=%sx%s", STATIC_MAP_WIDTH, STATIC_MAP_HEIGHT) +
+                String.format("&size=%sx%s", width, height) +
                 String.format("&scale=%s", STATIC_MAP_SCALE) +
                 String.format("&visible=%s,%s", lat, lng) +
                 String.format("&markers=icon:%s|%s,%s", Uri.encode(MARKER_IMAGE_URL), lat, lng);
@@ -138,10 +156,10 @@ public class MessageDetailActivity extends SherlockActivity {
         private final ImageView mView;
         private final String mUrl;
 
-        public LoadStaticMapTask(Context context, ImageView view, String lat, String lng) {
+        public LoadStaticMapTask(Context context, ImageView view, String url) {
             mContext = context;
             mView = view;
-            mUrl = getStaticMapUrl(lat, lng);
+            mUrl = url;
         }
 
         @Override
