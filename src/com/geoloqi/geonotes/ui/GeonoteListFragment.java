@@ -1,5 +1,7 @@
 package com.geoloqi.geonotes.ui;
 
+import java.util.ArrayList;
+
 import org.apache.http.Header;
 import org.apache.http.StatusLine;
 import org.json.JSONArray;
@@ -10,8 +12,14 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
@@ -34,6 +42,7 @@ public class GeonoteListFragment extends SherlockListFragment implements
         OnItemClickListener, LQServiceConnection {
     private static final String TAG = "GeonoteListFragment";
     
+    private JSONArray mItems;
     private GeonoteListAdapter mAdapter;
     
     @Override
@@ -53,6 +62,9 @@ public class GeonoteListFragment extends SherlockListFragment implements
         // Set the default text
         setEmptyText(getString(R.string.empty_geonote_list));
         
+        // Register our context menu
+        registerForContextMenu(lv);
+        
         LQService service = ((MainActivity) getActivity()).getService();
         if (service != null) {
             onServiceConnected(service);
@@ -62,6 +74,90 @@ public class GeonoteListFragment extends SherlockListFragment implements
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         // Pass
+    }
+    
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+            ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        
+        // Inflate our context menu
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.geonote_context_menu, menu);
+    }
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        JSONObject geonote = (JSONObject) mAdapter.getItem(info.position);
+        
+        switch (item.getItemId()) {
+        case R.id.delete:
+            deleteGeonote(info, geonote);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Delete a geonote from the list.
+     * 
+     * @param info
+     * @param geonote
+     */
+    private void deleteGeonote(final AdapterContextMenuInfo info, final JSONObject geonote) {
+        ArrayList<JSONObject> list = new ArrayList<JSONObject>();
+        
+        // We have to build an ArrayList here because JSONArray
+        // lacks a remove method.
+        for (int i = 0; i < mItems.length(); i++) {
+            list.add(mItems.optJSONObject(i));
+        }
+        
+        // Remove the geonote
+        list.remove(info.id);
+        
+        // Update our data array
+        mItems = new JSONArray(list);
+        
+        // Notify our list adapter of the update
+        mAdapter.remove(((JSONObject) mAdapter.getItem(info.position)));
+        
+        // Notify the server that the Geonote should be deleted
+        LQService service = ((MainActivity) getActivity()).getService();
+        if (service != null) {
+            LQSession session = service.getSession();
+            if (session != null) {
+                String path = String.format("trigger/delete/%s",
+                        geonote.optString("geonote_id"));
+                session.runPostRequest(path, new JSONObject(),
+                        new DeleteGeonoteListener());
+            }
+        }
+    }
+    
+    /**
+     * Take an action when a Geonote is deleted from the list.
+     * 
+     * @author Tristan Waddington
+     */
+    private class DeleteGeonoteListener implements OnRunApiRequestListener {
+        @Override
+        public void onComplete(LQSession session, JSONObject json,
+                Header[] headers, StatusLine status) {
+            Toast.makeText(getActivity(), R.string.delete_geonote_error,
+                    Toast.LENGTH_LONG).show();
+        }
+        @Override
+        public void onFailure(LQSession session, LQException e) {
+            Toast.makeText(getActivity(), R.string.delete_geonote_error,
+                    Toast.LENGTH_LONG).show();
+        }
+        @Override
+        public void onSuccess(LQSession session, JSONObject json,
+                Header[] headers) {
+            // Pass
+        }
     }
     
     @Override
@@ -85,10 +181,10 @@ public class GeonoteListFragment extends SherlockListFragment implements
                     mAdapter = new GeonoteListAdapter(activity);
                     
                     try {
-                        JSONArray array = json.getJSONArray("geonotes");
+                        mItems = json.getJSONArray("geonotes");
                         
-                        for (int i = 0; i < array.length(); i++) {
-                            mAdapter.add(array.optJSONObject(i));
+                        for (int i = 0; i < mItems.length(); i++) {
+                            mAdapter.add(mItems.optJSONObject(i));
                         }
                         setListAdapter(mAdapter);
                     } catch (JSONException e) {
