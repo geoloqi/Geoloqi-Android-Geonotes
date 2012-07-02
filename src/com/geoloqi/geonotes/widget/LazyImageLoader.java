@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -42,6 +43,9 @@ public class LazyImageLoader {
     
     private static final int HTTP_CONNECT_TIMEOUT = 2500;
     private static final int HTTP_SOCKET_TIMEOUT = 5000;
+    
+    /** The bitmap image cache. */
+    private static LruCache<String, Bitmap> mImageCache;
     
     /** The bitmap options used when loading images from disk. */
     private static BitmapFactory.Options sBitmapOptions;
@@ -62,6 +66,9 @@ public class LazyImageLoader {
         mContext = context;
         mClient = new DefaultHttpClient();
         mDownloadExecutor = Executors.newSingleThreadExecutor();
+        
+        // Create our image cache
+        mImageCache = new LruCache<String, Bitmap>(8);
         
         // Set default client parameters
         HttpParams params = new BasicHttpParams();
@@ -95,7 +102,12 @@ public class LazyImageLoader {
      * @param holder
      */
     public void loadImage(final ImageViewHolder holder) {
-        mDownloadExecutor.execute(new ImageDownload(holder));
+        Bitmap bitmap = mImageCache.get(holder.imageUrl);
+        if (bitmap != null) {
+            holder.image.setImageBitmap(bitmap);
+        } else {
+            mDownloadExecutor.execute(new ImageDownload(holder));
+        }
     }
     
     /**
@@ -175,6 +187,9 @@ public class LazyImageLoader {
                     public void run() {
                         if (mUrl.equals(mHolder.imageUrl)) {
                             mHolder.image.setImageBitmap(bitmap);
+                            
+                            // Add the image to the cache
+                            mImageCache.put(mUrl, bitmap);
                         }
                     }
                 });
