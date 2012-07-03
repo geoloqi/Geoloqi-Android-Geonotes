@@ -19,18 +19,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.geoloqi.geonotes.R;
 import com.geoloqi.geonotes.utils.FileUtils;
 
@@ -46,14 +46,15 @@ public class MessageDetailActivity extends SherlockActivity {
     private static final String MARKER_IMAGE_URL =
             "http://geoloqi.s3.amazonaws.com/markers/single/marker-images/image.png";
 
-    private static final int STATIC_MAP_SCALE = 1;
-
     private JSONObject mMessage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_detail);
+        
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
         
         Intent intent = getIntent();
         try {
@@ -95,6 +96,16 @@ public class MessageDetailActivity extends SherlockActivity {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case android.R.id.home:
+            startActivity(new Intent(this, MainActivity.class));
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Build a URL to a Google static map image using the
      * provider lat/long coordinates.
@@ -104,26 +115,17 @@ public class MessageDetailActivity extends SherlockActivity {
      */
     @TargetApi(13)
     private String getStaticMapUrl(String lat, String lng) {
-        int width = 0;
-        int height = 0;
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         
-        Display display = getWindowManager().getDefaultDisplay();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            Point p = new Point();
-            display.getSize(p);
-            width = p.x;
-            height = width / 2;
-        } else {
-            width = display.getWidth();
-            height = width / 2;
-        }
+        int width = displayMetrics.widthPixels;
+        int height = width / 2;
         
         // Really wish there was a decent URL formatter
         // in the Android standard library.
         String url = "https://maps.google.com/maps/api/staticmap?" +
                 "sensor=true&maptype=roadmap" +
                 String.format("&size=%sx%s", width, height) +
-                String.format("&scale=%s", STATIC_MAP_SCALE) +
+                String.format("&scale=%s", Math.floor(displayMetrics.density)) +
                 String.format("&visible=%s,%s", lat, lng) +
                 String.format("&markers=icon:%s|%s,%s", Uri.encode(MARKER_IMAGE_URL), lat, lng);
         return url;
