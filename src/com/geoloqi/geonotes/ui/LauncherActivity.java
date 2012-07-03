@@ -25,6 +25,11 @@ public class LauncherActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
         
+        // Start up the tracking service
+        if (SettingsActivity.isTrackerEnabled(this)) {
+            SettingsActivity.startTracker(this);
+        }
+        
         // Show the splash screen then start the main activity
         mHandler.postDelayed(new Runnable() {
             @Override

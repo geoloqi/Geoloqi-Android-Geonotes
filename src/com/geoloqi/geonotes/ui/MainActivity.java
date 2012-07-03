@@ -43,11 +43,6 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
         // Define our activity layout
         setContentView(R.layout.main);
         
-        // Start up the tracking service
-        if (SettingsActivity.isTrackerEnabled(this)) {
-            SettingsActivity.startTracker(this);
-        }
-        
         // Configure the ActionBar
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
