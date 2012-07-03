@@ -19,6 +19,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.geoloqi.android.sdk.LQBuild;
 import com.geoloqi.android.sdk.LQSharedPreferences;
 import com.geoloqi.android.sdk.LQTracker.LQTrackerProfile;
@@ -33,8 +34,8 @@ import com.geoloqi.geonotes.R;
  * 
  * @author Tristan Waddington
  */
-public class SettingsActivity extends PreferenceActivity implements OnPreferenceChangeListener,
-        OnPreferenceClickListener {
+public class SettingsActivity extends SherlockPreferenceActivity implements
+        OnPreferenceChangeListener, OnPreferenceClickListener {
     private static final String TAG = "SettingsActivity";
     private static final String PREF_USER_EMAIL = "com.geoloqi.geonotes.preference.EMAIL";
     private static final String URL_PRIVACY_POLICY =
