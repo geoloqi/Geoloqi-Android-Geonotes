@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -104,11 +103,11 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
         bindService(intent, mConnection, 0);
         
         // Prompt anonymous users to register
+        View authNotice = findViewById(R.id.auth_notice);
         if (LQSharedPreferences.getSessionIsAnonymous(this)) {
-            View authNotice = findViewById(R.id.auth_notice);
-            if (authNotice != null) {
-                authNotice.setVisibility(View.VISIBLE);
-            }
+            authNotice.setVisibility(View.VISIBLE);
+        } else {
+            authNotice.setVisibility(View.GONE);
         }
     }
 
@@ -161,8 +160,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
         case R.id.sign_up_button:
-            // TODO: Implement the register activity!
-            Log.d(TAG, "Sign Up!");
+            startActivity(new Intent(this, SignUpActivity.class));
             break;
         }
     }
