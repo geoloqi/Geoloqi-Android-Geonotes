@@ -11,6 +11,8 @@
     <string name="foreground_notification_text">Select to disable the background service.</string>
     
     <!-- Dialogs -->
+    <string name="loading_message">Loading &#8230;</string>
+    <string name="authenticating_message">Authenticating &#8230;</string>
     <string name="dialog_gps_title">GPS is Disabled</string>
     <string name="dialog_gps_message">You should enable GPS to make sure your geonotes are received.</string>
     
@@ -67,6 +69,9 @@
     
     <!-- Error messages -->
     <string name="delete_geonote_error">Failed to delete Geonote!</string>
+    <string name="invalid_email_error">Please enter a valid e-mail.</string>
+    <string name="invalid_password_error">Please enter a valid password.</string>
+    <string name="invalid_form_error">All fields are required!</string>
     
     <!-- Misc. copy -->
     <string name="anonymous_account_message">Tap here to create a Geoloqi account.</string>
