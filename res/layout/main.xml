@@ -1,26 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.viewpagerindicator.TabPageIndicator
+        android:id="@+id/main_pager_indicator"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:background="#000" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/main_pager"
+        android:layout_width="fill_parent"
+        android:layout_height="0px"
+        android:layout_weight="1" />
+
     <LinearLayout
         android:id="@+id/auth_notice"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_weight="0"
         android:background="@color/geoloqi_orange_secondary"
-        android:visibility="gone">
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
         <Button
             android:id="@+id/sign_up_button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@null"
             android:gravity="center"
             android:padding="15dp"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
             android:text="@string/anonymous_account_message"
-            android:background="@null" />
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
     </LinearLayout>
-</RelativeLayout>
+
+</LinearLayout>

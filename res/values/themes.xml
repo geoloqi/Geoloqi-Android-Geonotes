@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="CompatibilityTheme" parent="Theme.Sherlock.Light.DarkActionBar">
-        <!-- Any customizations for your app running on pre-3.0 devices here -->
+        <item name="vpiTabPageIndicatorStyle">@style/Widget.TabPageIndicator</item>
     </style>
-    <style name="CompatibilityTheme.NoTitleBar" parent="@android:style/Theme.NoTitleBar">
-        <!-- Any customizations for your app running on devices with Theme.Holo.Light.DarkActionBar here -->
-    </style>
+
+    <style name="CompatibilityTheme.NoTitleBar" parent="@android:style/Theme.NoTitleBar"></style>
+
 </resources>

@@ -1,4 +1,8 @@
 [submodule "ActionBarSherlock"]
 	path = ActionBarSherlock
 	url = https://github.com/JakeWharton/ActionBarSherlock
-        ignore = dirty
+    ignore = dirty
+[submodule "ViewPagerIndicator"]
+	path = ViewPagerIndicator
+	url = git://github.com/JakeWharton/Android-ViewPagerIndicator.git
+    ignore = dirty

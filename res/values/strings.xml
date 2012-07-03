@@ -20,6 +20,9 @@
     <string name="settings_title">Settings</string>
     
     <!-- Fragments -->
+    <string name="activity_list_title">ACTIVITY</string>
+    <string name="layer_list_title">LAYERS</string>
+    <string name="geonote_list_title">GEONOTES</string>
     <string name="empty_activity_list">You haven\'t received any messages.\n Try subscribing to some layers!</string>
     <string name="empty_layer_list">We couldn\'t find any layers.</string>
     <string name="empty_geonote_list">You have no pending geonotes.</string>

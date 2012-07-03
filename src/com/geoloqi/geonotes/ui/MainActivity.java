@@ -7,7 +7,9 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -21,8 +23,9 @@ import com.geoloqi.android.sdk.LQSharedPreferences;
 import com.geoloqi.android.sdk.service.LQService;
 import com.geoloqi.android.sdk.service.LQService.LQBinder;
 import com.geoloqi.geonotes.R;
-import com.geoloqi.geonotes.app.MainTabListener;
+import com.geoloqi.geonotes.app.MainFragmentPagerAdapter;
 import com.geoloqi.geonotes.app.SimpleAlertDialogFragment;
+import com.viewpagerindicator.TabPageIndicator;
 
 /**
  * The main activity for the Geoloqi client application.
@@ -31,7 +34,9 @@ import com.geoloqi.geonotes.app.SimpleAlertDialogFragment;
  */
 public class MainActivity extends SherlockFragmentActivity implements OnClickListener {
     private static final String TAG = "MainActivity";
-    private static final String PARAM_TAB_INDEX = "tab_index";
+    
+    private MainFragmentPagerAdapter mAdapter;
+    private ViewPager mPager;
     
     private LQService mService;
     private boolean mBound;
@@ -43,33 +48,22 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
         // Define our activity layout
         setContentView(R.layout.main);
         
-        // Configure the ActionBar
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        
         // Configure our navigation
-        ActionBar.Tab tab = actionBar.newTab();
-        tab.setText("Activity");
-        tab.setTabListener(new MainTabListener<ActivityListFragment>(this,
-                "activity", ActivityListFragment.class));
-        actionBar.addTab(tab);
+        mAdapter = new MainFragmentPagerAdapter(getSupportFragmentManager());
+        mAdapter.addItem(getString(R.string.activity_list_title),
+                Fragment.instantiate(this, ActivityListFragment.class.getName()));
+        mAdapter.addItem(getString(R.string.layer_list_title),
+                Fragment.instantiate(this, LayerListFragment.class.getName()));
+        mAdapter.addItem(getString(R.string.geonote_list_title),
+                Fragment.instantiate(this, GeonoteListFragment.class.getName()));
         
-        tab = actionBar.newTab();
-        tab.setText("Layers");
-        tab.setTabListener(new MainTabListener<LayerListFragment>(this,
-                "layers", LayerListFragment.class));
-        actionBar.addTab(tab);
+        mPager = (ViewPager) findViewById(R.id.main_pager);
+        mPager.setAdapter(mAdapter);
         
-        tab = actionBar.newTab();
-        tab.setText("Geonotes");
-        tab.setTabListener(new MainTabListener<GeonoteListFragment>(this,
-                "geonotes", GeonoteListFragment.class));
-        actionBar.addTab(tab);
-        
-        if (savedInstanceState != null) {
-            actionBar.setSelectedNavigationItem(
-                    savedInstanceState.getInt(PARAM_TAB_INDEX, 0));
-        }
+        // Configure our navigation titles
+        TabPageIndicator indicator =
+                (TabPageIndicator) findViewById(R.id.main_pager_indicator);
+        indicator.setViewPager(mPager);
         
         // Wire up our onclick handlers
         Button signUpButton = (Button) findViewById(R.id.sign_up_button);
@@ -115,17 +109,6 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
             unbindService(mConnection);
             mBound = false;
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        
-        ActionBar actionBar = getSupportActionBar();
-        
-        // Save the current tab state
-        outState.putInt(PARAM_TAB_INDEX,
-                actionBar.getSelectedNavigationIndex());
     }
 
     @Override
