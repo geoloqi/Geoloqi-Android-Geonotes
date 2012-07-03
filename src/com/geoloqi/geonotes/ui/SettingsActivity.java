@@ -97,7 +97,10 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
             // Display the account username
             preference = findPreference(getString(R.string.pref_key_account_username));
             if (preference != null) {
-                preference.setSummary(LQSharedPreferences.getSessionUsername(this));
+                if (!LQSharedPreferences.getSessionIsAnonymous(this)) {
+                    // TODO: Display email instead of username!
+                    preference.setTitle(LQSharedPreferences.getSessionUsername(this));
+                }
             }
             
             // Display the app version
@@ -183,28 +186,19 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        boolean consumed = false;
         String key = preference.getKey();
         if (key.equals(getString(R.string.pref_key_account_username))) {
-            LQSession session = mService.getSession();
-            if (session != null) {
-                if (session.isAnonymous()) {
-                    // Start log-in Activity
-                    startActivity(new Intent(this, AuthActivity.class));
-                } else {
-                    // TODO: Sign-out!
-                }
-            }
-            consumed = true;
+            startActivity(new Intent(this, AuthActivity.class));
+            return true;
         } else if (key.equals(getString(R.string.pref_key_privacy_policy))) {
             Intent intent = new Intent(Intent.ACTION_VIEW,
                             Uri.parse(URL_PRIVACY_POLICY));
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            consumed = true;
+            return true;
         }
-        return consumed;
+        return false;
     }
 
     /** Determine if the user has disabled the tracker. */

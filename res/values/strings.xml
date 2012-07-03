@@ -18,7 +18,7 @@
     <string name="settings_title">Settings</string>
     
     <!-- Fragments -->
-    <string name="empty_activity_list">Aw sad, you haven\'t received any messages yet!</string>
+    <string name="empty_activity_list">Looks like you haven\'t received any messages yet. Try signing up for some new layers!</string>
     <string name="empty_layer_list">We couldn\'t find any layers.</string>
     <string name="empty_geonote_list">You have no pending geonotes.</string>
     
@@ -54,7 +54,7 @@
     <string name="tracker_status_title">Enable location</string>
     <string name="start_on_boot_title">Enable on reboot</string>
     <string name="vibrate_title">Vibrate</string>
-    <string name="username_title">Username</string>
+    <string name="username_title">Sign in</string>
     <string name="app_version_title">App version</string>
     <string name="app_build_title">App build</string>
     <string name="sdk_version_title">SDK version</string>
@@ -65,8 +65,16 @@
     <string name="start_on_boot_summary">Start the location service automatically</string>
     <string name="vibrate_summary">Vibrate when new items arrive</string>
     
+    <!-- Error messages -->
+    <string name="delete_geonote_error">Failed to delete Geonote!</string>
+    
     <!-- Misc. copy -->
     <string name="anonymous_account_message">Tap here to create a Geoloqi account.</string>
+    <string name="existing_user_message">Already a Geoloqi user?</string>
+    <string name="new_user_message">Need a Geoloqi account?</string>
+    
+    <string name="sign_up_title">Sign-Up</string>
+    <string name="sign_in_title">Sign-In</string>
     
     <!-- Default strings -->
     <string name="short_lorem">Lorem ipsum dolor sit amet</string>
