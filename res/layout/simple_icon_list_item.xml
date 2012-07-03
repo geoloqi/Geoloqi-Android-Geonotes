@@ -23,6 +23,7 @@
         android:singleLine="true"
         android:ellipsize="marquee"
         android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#777"
         android:text="@string/short_lorem" />
 
     <TextView
