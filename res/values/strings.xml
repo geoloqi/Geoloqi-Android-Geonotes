@@ -74,7 +74,7 @@
     <string name="invalid_form_error">All fields are required!</string>
     
     <!-- Misc. copy -->
-    <string name="anonymous_account_message">Tap here to create a Geoloqi account.</string>
+    <string name="anonymous_account_message">You\'re using Geoloqi anonymously.</string>
     <string name="existing_user_message">Already a Geoloqi user?</string>
     <string name="new_user_message">Need a Geoloqi account?</string>
     
