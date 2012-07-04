@@ -10,6 +10,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -36,7 +37,6 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
     private static final String TAG = "MainActivity";
     
     private MainFragmentPagerAdapter mAdapter;
-    private ViewPager mPager;
     
     private LQService mService;
     private boolean mBound;
@@ -57,13 +57,13 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
         mAdapter.addItem(getString(R.string.geonote_list_title),
                 Fragment.instantiate(this, GeonoteListFragment.class.getName()));
         
-        mPager = (ViewPager) findViewById(R.id.main_pager);
-        mPager.setAdapter(mAdapter);
+        ViewPager pager = (ViewPager) findViewById(R.id.main_pager);
+        pager.setAdapter(mAdapter);
         
         // Configure our navigation titles
         TabPageIndicator indicator =
                 (TabPageIndicator) findViewById(R.id.main_pager_indicator);
-        indicator.setViewPager(mPager);
+        indicator.setViewPager(pager);
         
         // Wire up our onclick handlers
         Button signUpButton = (Button) findViewById(R.id.sign_up_button);
@@ -171,16 +171,8 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
                 // finished binding.
                 // TODO: Remove this logic once we implement a background
                 //       sync task.
-                FragmentManager fm = getSupportFragmentManager();
-                try {
-                    ((LQServiceConnection) fm.findFragmentByTag("activity")).onServiceConnected(mService);
-                } catch (NullPointerException e) {
-                    // Pass
-                }
-                try {
-                    ((LQServiceConnection) fm.findFragmentByTag("layers")).onServiceConnected(mService);
-                } catch (NullPointerException e) {
-                    // Pass
+                for (Fragment f : mAdapter.getAllItems()) {
+                    ((LQServiceConnection) f).onServiceConnected(mService);
                 }
             } catch (ClassCastException e) {
                 // Pass

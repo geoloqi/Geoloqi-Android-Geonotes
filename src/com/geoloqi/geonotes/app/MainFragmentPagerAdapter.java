@@ -1,6 +1,7 @@
 package com.geoloqi.geonotes.app;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -46,5 +47,13 @@ public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
     public void addItem(String title, Fragment fragment) {
         mTitles.add(title);
         mItems.add(fragment);
+    }
+
+    /**
+     * Get the list of {@link Fragment} instances contained
+     * within the adapter.
+     */
+    public List<Fragment> getAllItems() {
+        return mItems;
     }
 }
