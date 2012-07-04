@@ -102,6 +102,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements
             if (preference != null) {
                 if (!LQSharedPreferences.getSessionIsAnonymous(this)) {
                     preference.setTitle(getUserEmail(this));
+                    preference.setEnabled(false);
                 }
             }
             
