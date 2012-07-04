@@ -1,5 +1,9 @@
 package com.geoloqi.geonotes.ui;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.http.Header;
 import org.apache.http.StatusLine;
 import org.json.JSONArray;
@@ -65,7 +69,7 @@ public class LayerListFragment extends SherlockListFragment implements LQService
         }
         
         // TODO: Get the app layer_list!
-        session.runGetRequest("layer/list", new OnRunApiRequestListener() {
+        session.runGetRequest("layer/app_list", new OnRunApiRequestListener() {
             @Override
             public void onSuccess(LQSession session, JSONObject json,
                     Header[] headers) {
@@ -75,11 +79,25 @@ public class LayerListFragment extends SherlockListFragment implements LQService
                     mAdapter = new LayerListAdapter(activity);
                     
                     try {
-                        JSONArray array = json.getJSONArray("layers");
+                        TreeMap<String, JSONObject> layers =
+                                new TreeMap<String, JSONObject>();
                         
-                        for (int i = 0; i < array.length(); i++) {
-                            mAdapter.add(array.optJSONObject(i));
+                        Iterator<?> keys = json.keys();
+                        while (keys.hasNext()) {
+                            String key = (String) keys.next();
+                            
+                            JSONArray items = json.getJSONArray(key);
+                            for (int i = 0; i < items.length(); i++) {
+                                JSONObject layer = items.optJSONObject(i);
+                                layers.put(layer.optString("name"), layer);
+                            }
                         }
+                        
+                        // Add the sorted layers to the adapter
+                        for (Map.Entry<String, JSONObject> cursor : layers.entrySet()) {
+                            mAdapter.add(cursor.getValue());
+                        }
+                        
                         setListAdapter(mAdapter);
                     } catch (JSONException e) {
                         Log.e(TAG, "Failed to parse the layer list!");
