@@ -34,6 +34,9 @@ import com.viewpagerindicator.TabPageIndicator;
  * @author Tristan Waddington
  */
 public class MainActivity extends SherlockFragmentActivity implements OnClickListener {
+    public static final String EXTRA_CURRENT_ITEM =
+            "com.geoloqi.geonotes.extra.CURRENT_ITEM";
+    
     private static final String TAG = "MainActivity";
     
     private MainFragmentPagerAdapter mAdapter;
@@ -64,6 +67,10 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
         TabPageIndicator indicator =
                 (TabPageIndicator) findViewById(R.id.main_pager_indicator);
         indicator.setViewPager(pager);
+        
+        // Set the active tab
+        Intent intent = getIntent();
+        pager.setCurrentItem(intent.getIntExtra(EXTRA_CURRENT_ITEM, 0));
         
         // Wire up our onclick handlers
         Button signUpButton = (Button) findViewById(R.id.sign_up_button);
