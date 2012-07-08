@@ -59,17 +59,11 @@ public class GeonotePickerOverlay extends Overlay {
     /** The marker pin is animating down. */
     private static final int DROPPING = 4;
     
+    /** The target for our map marker. */
+    private final Paint mMarkerTarget;
+    
     /** Stub */
     private int mMarkerState = STATIC;
-    
-    /** Stub */
-    private int mMarkerDisplacement = 0;
-    
-    /** Stub */
-    private int mTargetAlpha = 0;
-    
-    /** Stub */
-    private long mLastStage = 0;
     
     /** Stub */
     private long mAnimStart = 0;
@@ -77,7 +71,6 @@ public class GeonotePickerOverlay extends Overlay {
     private MapView mMapView;
     private BitmapDrawable mMarker;
     private BitmapDrawable mMarkerShadow;
-    
     
     public GeonotePickerOverlay(Context context, MapView map) {
         Resources res = context.getResources();
@@ -87,6 +80,15 @@ public class GeonotePickerOverlay extends Overlay {
                 R.drawable.marker));
         mMarkerShadow = new BitmapDrawable(res, BitmapFactory.decodeResource(res,
                 R.drawable.marker_shadow));
+        
+        // Paint the target for our map marker
+        mMarkerTarget = new Paint();
+        mMarkerTarget.setAlpha(0);
+        mMarkerTarget.setAntiAlias(true);
+        mMarkerTarget.setColor(Color.DKGRAY);
+        mMarkerTarget.setDither(true);
+        mMarkerTarget.setStyle(Paint.Style.STROKE);
+        mMarkerTarget.setStrokeWidth(2);
     }
 
     @Override
@@ -129,16 +131,11 @@ public class GeonotePickerOverlay extends Overlay {
     
     @Override
     public boolean draw(Canvas canvas, MapView mapView, boolean shadow, long when) {
-        
-        if (mMarkerState == STATIC || !shadow) {
-            return false;
-        }
-        
-        Rect clipBounds = canvas.getClipBounds();
-        //Log.d(TAG, "clipBounds: "+clipBounds.toShortString());
-        
+        // Get our canvas density
         int density = canvas.getDensity();
-        //Log.d(TAG, "density: "+density);
+        
+        // Get the bounds of our canvas
+        Rect clipBounds = canvas.getClipBounds();
         
         // Find the center of the canvas
         int centerX = (clipBounds.left + clipBounds.width()) / 2;
@@ -153,59 +150,100 @@ public class GeonotePickerOverlay extends Overlay {
         int shadowHeight = mMarkerShadow.getIntrinsicHeight() * (density / 160);
         
         // ...?
-        double projH = COS_PROJECTION_ANGLE * (mMarkerDisplacement / 2);
-        int dispX = (int) (SIN_PROJECTION_ANGLE * projH);
-        int dispY = (int) (COS_PROJECTION_ANGLE * projH);
+        //double projH = COS_PROJECTION_ANGLE * (mMarkerDisplacement / 2);
+        //int dispX = (int) (SIN_PROJECTION_ANGLE * projH);
+        //int dispY = (int) (COS_PROJECTION_ANGLE * projH);
         
-        // ...
-        int pixelGradientRadius = 120;
-        
-        // ...
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setDither(true);
-        paint.setColor(Color.DKGRAY);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(2);
-        
-        float duration = 250;
-        
-        int to = 255;
-        
-        // ...
-        long timePassed = System.currentTimeMillis() - mAnimStart;
-        
-        // ...
-        float progress = timePassed / duration;
+        // Get our animation details
+        float animDuration = 150;
+        float animElapsed = System.currentTimeMillis() - mAnimStart;
+        float animProgress = animElapsed / animDuration;
         
         // ...?
-        if (progress > 1) {
-            progress = 1;
+        if (animProgress > 1) {
+            animProgress = 1;
         }
-        Log.d(TAG, String.format("%s / %s = %.5f", timePassed, duration, progress));
+        Log.d(TAG, String.format("%s / %s = %.5f", animElapsed, animDuration, animProgress));
         
         // delta
-        float delta = progress; //Linear
+        float animDelta = animProgress; // Linear delta
         
-        // step
-        if (mMarkerState == LIFTING) {
-            mTargetAlpha = Math.round(Math.min(255, to * delta));
-            Log.d(TAG, "if: "+mMarkerState);
-        } else if (mMarkerState == DROPPING) {
-            Log.d(TAG, "else: "+mMarkerState);
-            mTargetAlpha = to - Math.round(Math.min(255, to * delta));
-        }
-        Log.d(TAG, "alpha: "+mTargetAlpha);
-        
-        paint.setAlpha(mTargetAlpha);
+        if (shadow) {
+            Log.d(TAG, "Drawing shadows...");
+            
+            int alpha = 0;
+            int maxAlpha = 255;
+            
+            switch(mMarkerState) {
+            case LIFTING:
+                // Lift map marker, fade in target
+                alpha = Math.round(Math.min(maxAlpha, maxAlpha * animDelta));
+                break;
+            case HOLDING:
+                // Hold map marker, hold target
+                alpha = maxAlpha;
+                break;
+            case LINGERING:
+                // Hold map marker, hold target
+                alpha = maxAlpha;
+                break;
+            case DROPPING:
+                // Drop map marker, fade out target
+                alpha = maxAlpha - Math.round(Math.min(maxAlpha, maxAlpha * animDelta));
+                break;
+            case STATIC:
+                // Hide the target
+                alpha = 0;
+                break;
+            }
+            Log.d(TAG, "alpha: "+alpha);
+            
+            // Paint our marker target
+            mMarkerTarget.setAlpha(alpha);
 
-        int lineLength = 12;
-        canvas.drawLine(centerX - lineLength, (centerY + 5) - lineLength,
-                centerX + lineLength, (centerY - 5) + lineLength, paint);
-        canvas.drawLine(centerX + lineLength, (centerY + 5) - lineLength,
-                centerX - lineLength, (centerY - 5) + lineLength, paint);
+            int lineLength = 12;
+            canvas.drawLine(centerX - lineLength, (centerY + 5) - lineLength,
+                    centerX + lineLength, (centerY - 5) + lineLength, mMarkerTarget);
+            canvas.drawLine(centerX + lineLength, (centerY + 5) - lineLength,
+                    centerX - lineLength, (centerY - 5) + lineLength, mMarkerTarget);
+        } else {
+            Log.d(TAG, "Drawing markers...");
+            
+            int displacement = 0;
+            int maxDisplacement = 80;
+            
+            switch(mMarkerState) {
+            case LIFTING:
+                // Lift map marker, fade in target
+                displacement = Math.round(Math.min(maxDisplacement, maxDisplacement * animDelta));
+                break;
+            case HOLDING:
+                // Hold map marker, hold target
+                displacement = maxDisplacement;
+                break;
+            case LINGERING:
+                // Hold map marker, hold target
+                displacement = maxDisplacement;
+                break;
+            case DROPPING:
+                // Drop map marker, fade out target
+                displacement = maxDisplacement - Math.round(Math.min(maxDisplacement, maxDisplacement * animDelta));
+                break;
+            case STATIC:
+                // Hide the target
+                displacement = 0;
+                break;
+            }
+            
+            // ...
+            mMarker.setBounds(centerX - (markerWidth / 2),
+                    centerY - markerHeight - (displacement / 2),
+                    centerX + (markerWidth / 2), centerY - (displacement / 2));
+            mMarker.draw(canvas);
+        }
         
-        if (progress >= 1) {
+        // Are we still animating?
+        if (animProgress == 1) {
             switch (mMarkerState) {
             case LIFTING:
                 mMarkerState = HOLDING;
@@ -214,8 +252,11 @@ public class GeonotePickerOverlay extends Overlay {
                 mMarkerState = STATIC;
                 break;
             }
+            
+            // Animation finished!
             return false;
         }
+        
         // Still animating!
         return true;
 
@@ -264,17 +305,7 @@ public class GeonotePickerOverlay extends Overlay {
             //mMarkerShadow.setBounds(centerX + dispX - 2, centerY - shadowHeight - dispY + 2,
             //        centerX + shadowWidth + dispX - 2, centerY - dispY + 2);
             mMarkerShadow.draw(canvas);
-        } else {
-            Log.d(TAG, "Drawing markers...");
-            
-            
-            // ...
-            //mMarker.setBounds(centerX - (markerWidth / 2),
-            //        centerY - markerHeight - (mMarkerDisplacement / 2),
-            //        centerX + (markerWidth / 2), centerY - (mMarkerDisplacement / 2));
-            mMarker.draw(canvas);
         }
-        return mMarkerState != STATIC;
         */
     }
 }
