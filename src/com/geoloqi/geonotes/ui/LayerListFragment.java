@@ -89,6 +89,18 @@ public class LayerListFragment extends SherlockListFragment implements LQService
                             JSONArray items = json.getJSONArray(key);
                             for (int i = 0; i < items.length(); i++) {
                                 JSONObject layer = items.optJSONObject(i);
+                                
+                                try{
+                                    // TODO: Card layout for layer items with
+                                    //       active/inactive status clearly marked.
+                                    // TODO: Longpress to subscribe/unsubscribe
+                                    //       from a layer.
+                                    // TODO: List item text is being clipped "g".
+                                    Log.d(TAG, layer.toString(2));
+                                } catch (JSONException e) {
+                                    // Pass
+                                }
+                                
                                 layers.put(layer.optString("name"), layer);
                             }
                         }
@@ -110,12 +122,19 @@ public class LayerListFragment extends SherlockListFragment implements LQService
             }
             @Override
             public void onFailure(LQSession session, LQException e) {
-                Log.d(TAG, "onFailure");
+                Log.e(TAG, "Failed to load the layer list!", e);
+                
+                // Set an empty adapter on the list
+                setListAdapter(new LayerListAdapter(getActivity()));
             }
             @Override
             public void onComplete(LQSession session, JSONObject json,
                     Header[] headers, StatusLine status) {
-                Log.d(TAG, "onComplete");
+                Log.d(TAG, status.toString());
+                Log.e(TAG, "Failed to load the layer list!");
+                
+                // Set an empty adapter on the list
+                setListAdapter(new LayerListAdapter(getActivity()));
             }
         });
     }

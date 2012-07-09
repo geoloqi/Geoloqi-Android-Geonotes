@@ -108,12 +108,19 @@ public class ActivityListFragment extends SherlockListFragment implements
             }
             @Override
             public void onFailure(LQSession session, LQException e) {
-                Log.d(TAG, "onFailure");
+                Log.e(TAG, "Failed to load the activity list!", e);
+                
+                // Set an empty adapter on the list
+                setListAdapter(new ActivityListAdapter(getActivity()));
             }
             @Override
             public void onComplete(LQSession session, JSONObject json,
                     Header[] headers, StatusLine status) {
-                Log.d(TAG, "onComplete");
+                Log.d(TAG, status.toString());
+                Log.e(TAG, "Failed to load the activity list!");
+                
+                // Set an empty adapter on the list
+                setListAdapter(new ActivityListAdapter(getActivity()));
             }
         });
     }

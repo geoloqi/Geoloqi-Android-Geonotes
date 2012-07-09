@@ -18,10 +18,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.geoloqi.android.sdk.LQException;
@@ -198,12 +198,19 @@ public class GeonoteListFragment extends SherlockListFragment implements
             }
             @Override
             public void onFailure(LQSession session, LQException e) {
-                Log.d(TAG, "onFailure");
+                Log.e(TAG, "Failed to load the geonote list!", e);
+                
+                // Set an empty adapter on the list
+                setListAdapter(new GeonoteListAdapter(getActivity()));
             }
             @Override
             public void onComplete(LQSession session, JSONObject json,
                     Header[] headers, StatusLine status) {
-                Log.d(TAG, "onComplete");
+                Log.d(TAG, status.toString());
+                Log.e(TAG, "Failed to load the geonote list!");
+                
+                // Set an empty adapter on the list
+                setListAdapter(new GeonoteListAdapter(getActivity()));
             }
         });
     }
