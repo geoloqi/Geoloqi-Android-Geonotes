@@ -1,0 +1,35 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="6dp" >
+
+    <!-- TODO: Define the text sizes/colors in teh style.xml file! -->
+    <!-- textColorPrimary, textColorSecondary, textColorPrimaryInverse, textColorSecondaryInverse -->
+
+    <TextView
+        android:id="@+id/text1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:text="@string/long_lorem"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/text2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:maxLines="1"
+        android:singleLine="false"
+        android:text="@string/long_lorem"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="12sp" />
+
+</LinearLayout>

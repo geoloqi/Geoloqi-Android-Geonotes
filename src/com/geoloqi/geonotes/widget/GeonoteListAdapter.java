@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.geoloqi.geonotes.R;
@@ -28,7 +27,7 @@ public class GeonoteListAdapter extends ArrayAdapter<JSONObject> {
     private LayoutInflater mInflater;
     
     public GeonoteListAdapter(Context context) {
-        super(context, R.layout.simple_icon_list_item);
+        super(context, R.layout.simple_text_list_item);
         
         // Get our layout inflater
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -41,13 +40,12 @@ public class GeonoteListAdapter extends ArrayAdapter<JSONObject> {
         if (convertView == null) {
             // Inflate our row layout
             convertView = mInflater.inflate(
-                    R.layout.simple_icon_list_item, parent, false);
+                    R.layout.simple_text_list_item, parent, false);
             
             // Cache the row elements for efficient retrieval
             holder = new ImageViewHolder();
             holder.text1 = (TextView) convertView.findViewById(R.id.text1);
             holder.text2 = (TextView) convertView.findViewById(R.id.text2);
-            holder.image = (ImageView) convertView.findViewById(R.id.icon);
             
             // Store the holder object on the row
             convertView.setTag(holder);
@@ -58,7 +56,6 @@ public class GeonoteListAdapter extends ArrayAdapter<JSONObject> {
         // Reset our row values
         holder.text1.setText("");
         holder.text2.setText("");
-        holder.image.setImageDrawable(null);
         
         // Populate our data
         JSONObject geonote = getItem(position);
@@ -73,14 +70,6 @@ public class GeonoteListAdapter extends ArrayAdapter<JSONObject> {
             subText = String.format("%s | %s", subText, placeName);
         }
         holder.text2.setText(subText);
-        
-        // Hide the description TextView if it is empty so
-        // the name field will be centered.
-        if (TextUtils.isEmpty(holder.text2.getText())) {
-            holder.text2.setVisibility(View.GONE);
-        } else {
-            holder.text2.setVisibility(View.VISIBLE);
-        }
         
         return convertView;
     }
