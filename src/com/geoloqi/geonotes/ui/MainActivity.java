@@ -8,14 +8,11 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -39,6 +36,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
     
     private static final String TAG = "MainActivity";
     
+    private ViewPager mPager;
     private MainFragmentPagerAdapter mAdapter;
     
     private LQService mService;
@@ -60,23 +58,31 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
         mAdapter.addItem(getString(R.string.geonote_list_title),
                 Fragment.instantiate(this, GeonoteListFragment.class.getName()));
         
-        ViewPager pager = (ViewPager) findViewById(R.id.main_pager);
-        pager.setAdapter(mAdapter);
+        mPager = (ViewPager) findViewById(R.id.main_pager);
+        mPager.setAdapter(mAdapter);
         
         // Configure our navigation titles
         TabPageIndicator indicator =
                 (TabPageIndicator) findViewById(R.id.main_pager_indicator);
-        indicator.setViewPager(pager);
+        indicator.setViewPager(mPager);
         
         // Set the active tab
         Intent intent = getIntent();
-        pager.setCurrentItem(intent.getIntExtra(EXTRA_CURRENT_ITEM, 0));
+        mPager.setCurrentItem(intent.getIntExtra(EXTRA_CURRENT_ITEM, 0));
         
         // Wire up our onclick handlers
         Button signUpButton = (Button) findViewById(R.id.sign_up_button);
         if (signUpButton != null) {
             signUpButton.setOnClickListener(this);
         }
+    }
+    
+    @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        
+        // Set the active tab
+        mPager.setCurrentItem(intent.getIntExtra(EXTRA_CURRENT_ITEM, 0));
     }
 
     @Override
@@ -135,7 +141,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         case R.id.menu_create_geonote:
-            startActivity(new Intent(this, MapPickerActivity.class));
+            startActivity(new Intent(this, EditGeonoteActivity.class));
             return true;
         }
         return false;

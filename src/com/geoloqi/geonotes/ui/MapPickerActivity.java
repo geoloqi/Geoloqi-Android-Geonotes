@@ -159,10 +159,10 @@ public class MapPickerActivity extends SherlockMapActivity {
             GeoPoint center = mMapView.getMapCenter();
             
             // Calculate our selection values
-            long lat = Math.round(center.getLatitudeE6() / 1e6);   // longitude
-            long lng = Math.round(center.getLongitudeE6() / 1e6);  // latitude
-            double span = (mMapView.getLongitudeSpan() / 1000000) *
-                    MapPickerOverlay.FRACTIONAL_GRADIENT_VALUE;    // span_longitude
+            double lat = center.getLatitudeE6() / 1e6;
+            double lng = center.getLongitudeE6() / 1e6;
+            double span = (mMapView.getLongitudeSpan() / 1e6) *
+                    MapPickerOverlay.FRACTIONAL_GRADIENT_VALUE;
             
             Intent data = new Intent();
             data.putExtra(EXTRA_LAT, lat);

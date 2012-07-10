@@ -57,6 +57,11 @@
         </activity>
         
         <activity
+            android:name=".ui.EditGeonoteActivity"
+            android:label="@string/app_name">
+        </activity>
+        
+        <activity
             android:name=".ui.MessageDetailActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
