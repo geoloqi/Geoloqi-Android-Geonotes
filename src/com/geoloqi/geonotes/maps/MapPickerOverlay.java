@@ -92,7 +92,9 @@ public class MapPickerOverlay extends Overlay {
         //       is performing some other animation, like pinch-zoom
         //       or double-tap.
         
-        if (event.getPointerCount() == 1) {
+        if (event.getPointerCount() > 1) {
+            mMarkerState = STATIC;
+        } else {
             switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 switch (mMarkerState) {
