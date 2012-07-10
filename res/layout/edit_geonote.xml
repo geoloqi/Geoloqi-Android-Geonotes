@@ -31,6 +31,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Message"
                 android:inputType="textMultiLine|textShortMessage|textCapSentences|textAutoCorrect"
+                android:maxLength="140"
                 android:maxLines="3" />
 
             <Button
