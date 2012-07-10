@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.MenuItem.OnMenuItemClickListener;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockMapActivity;
+import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -51,10 +54,15 @@ public class MapPickerActivity extends SherlockMapActivity {
     
     private MapView mMapView;
     private MapController mMapController;
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Set some defaults.
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
         
         // Configure our MapView.
         mMapView = new MapView(this, Constants.GOOGLE_MAPS_KEY);
@@ -72,6 +80,9 @@ public class MapPickerActivity extends SherlockMapActivity {
         
         // Insert the MapView into the layout.
         setContentView(mMapView);
+        
+        // Display the contextual action bar
+        startActionMode(mActionModeCallback);
         
         // Restore our saved map state
         if (savedInstanceState != null) {
@@ -140,21 +151,43 @@ public class MapPickerActivity extends SherlockMapActivity {
         }
         return location;
     }
-    
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        
-        MenuInflater inflater = getSupportMenuInflater();
-        inflater.inflate(R.menu.map_picker_menu, menu);
-        
-        return true;
-    }
-    
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-        case R.id.menu_done:
+
+    /**
+     * Provide a callback for our contextual action bar. This menu
+     * callback replaces the typical {@link OnMenuItemClickListener}
+     * implementation.
+     */
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.setTitle("Done?");
+            
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.map_picker_menu, menu);
+            return true;
+        }
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch(item.getItemId()) {
+            case R.id.menu_my_location:
+                Location location = getLastKnownLocation();
+                if (location != null) {
+                    // Set the map center to the device's last known location
+                    mMapCenter = new GeoPoint((int) (location.getLatitude() * 1e6),
+                            (int) (location.getLongitude() * 1e6));
+                    mMapController.animateTo(mMapCenter);
+                }
+                return true;
+            }
+            return false;
+        }
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
             // Get the map center
             GeoPoint center = mMapView.getMapCenter();
             
@@ -170,18 +203,6 @@ public class MapPickerActivity extends SherlockMapActivity {
             data.putExtra(EXTRA_SPAN, span);
             setResult(RESULT_OK, data);
             finish();
-            
-            return true;
-        case R.id.menu_my_location:
-            Location location = getLastKnownLocation();
-            if (location != null) {
-                // Set the map center to the device's last known location
-                mMapCenter = new GeoPoint((int) (location.getLatitude() * 1e6),
-                        (int) (location.getLongitude() * 1e6));
-                mMapController.animateTo(mMapCenter);
-            }
-            return true;
         }
-        return false;
-    }
+    };
 }

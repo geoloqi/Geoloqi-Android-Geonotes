@@ -52,6 +52,8 @@ public class EditGeonoteActivity extends SherlockActivity implements
         
         // Start the map picker activity so the user can
         // select a region for the new geonote.
+        // TODO: Allow the user to create a new geonote at an existing
+        //       place or to pick from the map.
         if (savedInstanceState == null) {
             Intent intent = new Intent(this, MapPickerActivity.class);
             intent.setAction(Intent.ACTION_PICK);
