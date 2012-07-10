@@ -183,7 +183,9 @@ public class GeonoteListFragment extends SherlockListFragment implements
                     try {
                         mItems = json.getJSONArray("geonotes");
                         
-                        for (int i = 0; i < mItems.length(); i++) {
+                        // We iterate over the list in reverse order so the
+                        // latest geonote is at the top.
+                        for (int i = (mItems.length() - 1); i >= 0; i--) {
                             mAdapter.add(mItems.optJSONObject(i));
                         }
                         setListAdapter(mAdapter);
