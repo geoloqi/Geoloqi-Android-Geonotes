@@ -103,6 +103,8 @@ public class EditGeonoteActivity extends SherlockActivity implements
             }
             break;
         case RESULT_CANCELED:
+            // Finish and return to the previous Activity
+            finish();
             break;
         }
     }
