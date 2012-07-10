@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:background="#F2F2F2"
             android:padding="20dp"
-            android:text="@string/edit_geonote_title"
+            android:text="@string/new_geonote_title"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#444"
             android:textStyle="bold" />
@@ -29,16 +29,43 @@
                 android:id="@+id/text"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="Message"
+                android:hint="Message&#8230;"
                 android:inputType="textMultiLine|textShortMessage|textCapSentences|textAutoCorrect"
                 android:maxLength="140"
                 android:maxLines="3" />
 
-            <Button
-                android:id="@+id/submit_button"
+            <TextView
+                android:id="@+id/location"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Submit" />
+                android:layout_marginBottom="10sp"
+                android:padding="2sp"
+                android:text="@string/short_lorem"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/pick_on_map_button"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Pick on Map" />
+
+                <Button
+                    android:id="@+id/submit_button"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:text="Submit" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

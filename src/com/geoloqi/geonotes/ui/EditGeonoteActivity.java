@@ -50,20 +50,11 @@ public class EditGeonoteActivity extends SherlockActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // Start the map picker activity so the user can
-        // select a region for the new geonote.
-        // TODO: Allow the user to create a new geonote at an existing
-        //       place or to pick from the map.
-        if (savedInstanceState == null) {
-            Intent intent = new Intent(this, MapPickerActivity.class);
-            intent.setAction(Intent.ACTION_PICK);
-            startActivityForResult(intent, PICK_GEONOTE_REQUEST);
-        }
-        
         // Set our layout
         setContentView(R.layout.edit_geonote);
         
         // Set our onclick listeners
+        ((TextView) findViewById(R.id.pick_on_map_button)).setOnClickListener(this);
         ((TextView) findViewById(R.id.submit_button)).setOnClickListener(this);
     }
     
@@ -99,9 +90,10 @@ public class EditGeonoteActivity extends SherlockActivity implements
         switch (resultCode) {
         case RESULT_OK:
             if (data != null) {
-                mLatitude = data.getDoubleExtra(MapPickerActivity.EXTRA_LAT, 0);
-                mLongitude = data.getDoubleExtra(MapPickerActivity.EXTRA_LNG, 0);
-                mSpan = data.getDoubleExtra(MapPickerActivity.EXTRA_SPAN, 0);
+                double lat = data.getDoubleExtra(MapPickerActivity.EXTRA_LAT, 0);
+                double lng = data.getDoubleExtra(MapPickerActivity.EXTRA_LNG, 0);
+                double span = data.getDoubleExtra(MapPickerActivity.EXTRA_SPAN, 0);
+                handleMapPickerResult(lat, lng, span);
             }
             break;
         case RESULT_CANCELED:
@@ -114,6 +106,13 @@ public class EditGeonoteActivity extends SherlockActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+        case R.id.pick_on_map_button:
+            // Start the map picker activity so the user can
+            // select a region for the new geonote.
+            Intent intent = new Intent(this, MapPickerActivity.class);
+            intent.setAction(Intent.ACTION_PICK);
+            startActivityForResult(intent, PICK_GEONOTE_REQUEST);
+            break;
         case R.id.submit_button:
             if (mBound && mService != null) {
                 LQSession session = mService.getSession();
@@ -148,6 +147,27 @@ public class EditGeonoteActivity extends SherlockActivity implements
             }
             break;
         }
+    }
+
+    /**
+     * Handle the result returned from the {@link MapPickerActivity}.
+     * 
+     * @param lat
+     * @param lng
+     * @param span
+     */
+    private void handleMapPickerResult(double lat, double lng, double span) {
+        mLatitude = lat;
+        mLongitude = lng;
+        mSpan = span;
+        
+        // Display the selection
+        TextView location = (TextView) findViewById(R.id.location);
+        location.setText(String.format("%s,%s", lat, lng));
+        location.setVisibility(View.VISIBLE);
+        
+        // Toggle our button state
+        findViewById(R.id.submit_button).setEnabled(true);
     }
 
     /**

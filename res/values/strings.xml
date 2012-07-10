@@ -11,8 +11,8 @@
     <string name="foreground_notification_text">Select to disable the background service.</string>
     
     <!-- Dialogs -->
-    <string name="loading_message">Loading &#8230;</string>
-    <string name="authenticating_message">Authenticating &#8230;</string>
+    <string name="loading_message">Loading, please wait&#8230;</string>
+    <string name="authenticating_message">Authenticating, please wait&#8230;</string>
     <string name="dialog_gps_title">GPS is Disabled</string>
     <string name="dialog_gps_message">You should enable GPS to make sure your geonotes are received.</string>
     
@@ -84,7 +84,7 @@
     
     <string name="sign_up_title">Sign-Up</string>
     <string name="sign_in_title">Sign-In</string>
-    <string name="edit_geonote_title">Edit Geonote</string>
+    <string name="new_geonote_title">New Geonote</string>
     
     <!-- Default strings -->
     <string name="short_lorem">Lorem ipsum dolor sit amet</string>
