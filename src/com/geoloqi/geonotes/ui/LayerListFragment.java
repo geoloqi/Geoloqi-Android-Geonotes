@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.http.Header;
+import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,7 +15,14 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
+import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.geoloqi.android.sdk.LQException;
@@ -52,12 +60,118 @@ public class LayerListFragment extends SherlockListFragment implements LQService
         // Set the default text
         setEmptyText(getString(R.string.empty_activity_list));
         
+        // Register our context menu
+        registerForContextMenu(lv);
+        
         LQService service = ((MainActivity) getActivity()).getService();
         if (service != null) {
             onServiceConnected(service);
         }
     }
-
+    
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+            ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        
+        // Inflate our context menu
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.layer_context_menu, menu);
+        
+        // Configure our menu items
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        JSONObject layer = (JSONObject) mAdapter.getItem(info.position);
+        
+        if (layer.optBoolean("subscribed")) {
+            MenuItem unsubscribe = menu.findItem(R.id.unsubscribe);
+            unsubscribe.setEnabled(true);
+        } else {
+            MenuItem subscribe = menu.findItem(R.id.subscribe);
+            subscribe.setEnabled(true);
+        }
+    }
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        JSONObject layer = (JSONObject) mAdapter.getItem(info.position);
+        
+        switch (item.getItemId()) {
+        case R.id.subscribe:
+            subscribeLayer(layer.optString("layer_id"));
+            return true;
+        case R.id.unsubscribe:
+            unsubscribeLayer(layer.optString("layer_id"));
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Subscribe the active user to the indicated layer.
+     * @param id
+     */
+    private void subscribeLayer(String id) {
+        LQService service = ((MainActivity) getActivity()).getService();
+        if (service != null) {
+            LQSession session = service.getSession();
+            if (session != null) {
+                session.runPostRequest(String.format("layer/subscribe/%s", id),
+                        new JSONObject(), new LayerSubscriptionListener());
+            }
+        }
+    }
+    
+    /**
+     * Unsubscribe the active user from the indicated layer.
+     * @param id
+     */
+    private void unsubscribeLayer(String id) {
+        LQService service = ((MainActivity) getActivity()).getService();
+        if (service != null) {
+            LQSession session = service.getSession();
+            if (session != null) {
+                session.runPostRequest(String.format("layer/unsubscribe/%s", id),
+                        new JSONObject(), new LayerSubscriptionListener());
+            }
+        }
+    }
+    
+    /** Handle the response to a layer subscription request. */
+    private class LayerSubscriptionListener implements OnRunApiRequestListener {
+        @Override
+        public void onComplete(LQSession session, JSONObject json,
+                Header[] headers, StatusLine status) {
+            if (status.getStatusCode() == HttpStatus.SC_CREATED) {
+                // Success! This API endpoint returns a 201 when
+                // subscribing succeeds.
+                try {
+                    Log.d(TAG, json.toString(2));
+                } catch (JSONException e) {
+                    // Pass
+                }
+            } else {
+                // Error!
+                Toast.makeText(getActivity(), json.optString("error_description"),
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+        @Override
+        public void onFailure(LQSession session, LQException e) {
+            Toast.makeText(getActivity(), e.getMessage(),
+                    Toast.LENGTH_LONG).show();
+        }
+        @Override
+        public void onSuccess(LQSession session, JSONObject json,
+                Header[] headers) {
+            try {
+                Log.d(TAG, json.toString(2));
+            } catch (JSONException e) {
+                // Pass
+            }
+        }
+    }
+    
     @Override
     public void onServiceConnected(LQService service) {
         LQSession session = service.getSession();
