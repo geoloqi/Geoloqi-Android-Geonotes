@@ -9,18 +9,11 @@
         android:orientation="vertical" >
 
         <LinearLayout
+            android:id="@+id/map_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#F2F2F2"
             android:orientation="vertical" >
-
-            <ImageButton
-                android:id="@+id/static_map"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@null"
-                android:scaleType="centerCrop" />
 
             <!-- Horizontal rule -->
 

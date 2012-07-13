@@ -1,52 +1,44 @@
 package com.geoloqi.geonotes.ui;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockMapActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.geoloqi.geonotes.Constants;
 import com.geoloqi.geonotes.R;
-import com.geoloqi.geonotes.utils.FileUtils;
+import com.geoloqi.geonotes.maps.DoubleTapMapView;
+import com.geoloqi.geonotes.maps.GeonoteItemizedOverlay;
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
+import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
 
 /**
  * Display detailed information about an activity item.
  * 
  * @author Tristan Waddington
  */
-public class MessageDetailActivity extends SherlockActivity {
+public class MessageDetailActivity extends SherlockMapActivity {
     public static final String EXTRA_JSON = "com.geoloqi.geonotes.ui.extra.JSON";
 
     private static final String TAG = "MessageDetailActivity";
-    private static final String MARKER_IMAGE_URL =
-            "http://geoloqi.s3.amazonaws.com/markers/single/marker-images/image.png";
 
     private JSONObject mMessage;
+    
+    private MapView mMapView;
+    private GeoPoint mMapCenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,16 +76,46 @@ public class MessageDetailActivity extends SherlockActivity {
                         mMessage.optString("displayDate"), actor.optString("displayName")));
             }
             
-            // Display our static map
-            ImageButton mapView = (ImageButton) findViewById(R.id.static_map);
-            if (mapView != null) {
-                String url = getStaticMapUrl(location.getString("latitude"),
-                        location.getString("longitude"));
-                new LoadStaticMapTask(this, mapView, url).execute();
-            }
+            // Display our map
+            mMapView = new DoubleTapMapView(this, Constants.GOOGLE_MAPS_KEY);
+            mMapView.setClickable(false);
+            mMapView.setBuiltInZoomControls(false);
+            mMapView.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    getResources().getDimensionPixelSize(R.dimen.message_detail_map_height)));
+            
+            // Add the MapView to the layout
+            ((ViewGroup) findViewById(R.id.map_container)).addView(mMapView, 0);
+            
+            // Build a GeoPoint representing where the geonote was
+            // picked up.
+            mMapCenter = new GeoPoint((int) (location.optDouble("latitude") * 1e6),
+                    (int) (location.optDouble("longitude") * 1e6));
+            
+            // Build our geonote overlay
+            GeonoteItemizedOverlay geonoteOverlay = new GeonoteItemizedOverlay(
+                    getResources().getDrawable(R.drawable.marker));
+            
+            OverlayItem geonote = new OverlayItem(mMapCenter,
+                    location.optString("displayName"), object.optString("summary"));
+            geonoteOverlay.addOverlay(geonote);
+            
+            // Add the geonote to our MapView as an overlay
+            List<Overlay> mapOverlays = mMapView.getOverlays();
+            mapOverlays.add(geonoteOverlay);
         } catch (JSONException e) {
             Log.e(TAG, "Failed to parse message data!");
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        
+        MenuInflater inflater = getSupportMenuInflater();
+        inflater.inflate(R.menu.settings_menu, menu);
+        
+        return true;
     }
 
     @Override
@@ -102,104 +124,15 @@ public class MessageDetailActivity extends SherlockActivity {
         case android.R.id.home:
             startActivity(new Intent(this, MainActivity.class));
             return true;
+        case R.id.menu_settings:
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
         }
         return false;
     }
 
-    /**
-     * Build a URL to a Google static map image using the
-     * provider lat/long coordinates.
-     * 
-     * @param lat
-     * @param lng
-     */
-    @TargetApi(13)
-    private String getStaticMapUrl(String lat, String lng) {
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        
-        int width = displayMetrics.widthPixels;
-        int height = width / 2;
-        
-        // Really wish there was a decent URL formatter
-        // in the Android standard library.
-        String url = "https://maps.google.com/maps/api/staticmap?" +
-                "sensor=true&maptype=roadmap" +
-                String.format("&size=%sx%s", width, height) +
-                String.format("&scale=%s", Math.floor(displayMetrics.density)) +
-                String.format("&visible=%s,%s", lat, lng) +
-                String.format("&markers=icon:%s|%s,%s", Uri.encode(MARKER_IMAGE_URL), lat, lng);
-        return url;
-    }
-
-    /**
-     * Return the filename for a cached map image from the given map URL.
-     * @param url
-     */
-    private static String getMapFilename(String url) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] messageDigest = md.digest(url.getBytes());
-            BigInteger number = new BigInteger(1, messageDigest);
-            return number.toString(16);
-        } catch (NoSuchAlgorithmException e) {
-            // Pass
-        }
-        return null;
-    }
-
-    /**
-     * Retrieve a Google static map image from the web or a
-     * local image cache.
-     * 
-     * @author Tristan Waddington
-     */
-    private static class LoadStaticMapTask extends AsyncTask<Object, Object, Bitmap> {
-        private final Context mContext;
-        private final ImageView mView;
-        private final String mUrl;
-
-        public LoadStaticMapTask(Context context, ImageView view, String url) {
-            mContext = context;
-            mView = view;
-            mUrl = url;
-        }
-
-        @Override
-        protected Bitmap doInBackground(Object...o) {
-            File imageFile = new File(mContext.getCacheDir(), getMapFilename(mUrl));
-            if (!imageFile.exists()) {
-                // Download map from the web
-                try {
-                    URL url = new URL(mUrl);
-                    
-                    // Open our URL connection
-                    HttpURLConnection urlConnection =
-                            (HttpURLConnection) url.openConnection();
-                    urlConnection.setConnectTimeout(5000);
-                    urlConnection.setReadTimeout(10000);
-                    try {
-                        InputStream in = new BufferedInputStream(
-                              urlConnection.getInputStream());
-
-                        // Write the file to disk
-                        FileUtils.writeFileToDisk(imageFile, in);
-                    } finally {
-                        urlConnection.disconnect();
-                    }
-                } catch (ClientProtocolException e) {
-                    Log.e(TAG, "Failed to load static map from the web!", e);
-                } catch (IOException e) {
-                    Log.e(TAG, "Failed to load static map from the web!", e);
-                }
-            }
-            return BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            if (bitmap != null) {
-                mView.setImageBitmap(bitmap);
-            }
-        }
+    @Override
+    protected boolean isRouteDisplayed() {
+        return false;
     }
 }
