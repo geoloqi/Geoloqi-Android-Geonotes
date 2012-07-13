@@ -36,6 +36,9 @@ import com.geoloqi.geonotes.utils.FileUtils;
  * thread, caching them to disk and finally updating the
  * corresponding {@link ImageView} in a {@link ListView} row.
  * 
+ * @see ImageViewHolder
+ * @see LruCache
+ * 
  * @author Tristan Waddington
  */
 public class LazyImageLoader {
