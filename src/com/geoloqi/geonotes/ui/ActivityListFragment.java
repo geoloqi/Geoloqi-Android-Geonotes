@@ -48,7 +48,7 @@ public class ActivityListFragment extends SherlockListFragment implements
         
         // Configure our ListView
         ListView lv = getListView();
-        lv.setFastScrollEnabled(true);
+        lv.setFastScrollEnabled(false);
         lv.setOnItemClickListener(this);
         
         // Set the default text
