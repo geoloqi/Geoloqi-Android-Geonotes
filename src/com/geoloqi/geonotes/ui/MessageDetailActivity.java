@@ -21,6 +21,7 @@ import com.geoloqi.geonotes.R;
 import com.geoloqi.geonotes.maps.DoubleTapMapView;
 import com.geoloqi.geonotes.maps.GeonoteItemizedOverlay;
 import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
@@ -34,6 +35,8 @@ public class MessageDetailActivity extends SherlockMapActivity {
     public static final String EXTRA_JSON = "com.geoloqi.geonotes.ui.extra.JSON";
 
     private static final String TAG = "MessageDetailActivity";
+
+    private static final int DEFAULT_MAP_ZOOM = 17;
 
     private JSONObject mMessage;
     
@@ -108,6 +111,15 @@ public class MessageDetailActivity extends SherlockMapActivity {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        
+        // Center the map
+        MapController mapController = mMapView.getController();
+        mapController.setCenter(mMapCenter);
+        mapController.setZoom(DEFAULT_MAP_ZOOM);
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
