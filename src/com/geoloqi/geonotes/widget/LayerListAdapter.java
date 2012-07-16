@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,7 +25,7 @@ public class LayerListAdapter extends ArrayAdapter<JSONObject> {
     private LayoutInflater mInflater;
     
     public LayerListAdapter(Context context) {
-        super(context, R.layout.simple_icon_list_item);
+        super(context, R.layout.layer_list_item);
         
         // Get our lazy loader
         mLazyLoader = LazyImageLoader.getInstance(context);
@@ -35,23 +36,24 @@ public class LayerListAdapter extends ArrayAdapter<JSONObject> {
     
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final ImageViewHolder holder;
+        final LayerImageViewHolder holder;
         
         if (convertView == null) {
             // Inflate our row layout
             convertView = mInflater.inflate(
-                    R.layout.simple_icon_list_item, parent, false);
+                    R.layout.layer_list_item, parent, false);
             
             // Cache the row elements for efficient retrieval
-            holder = new ImageViewHolder();
+            holder = new LayerImageViewHolder();
             holder.text1 = (TextView) convertView.findViewById(R.id.text1);
             holder.text2 = (TextView) convertView.findViewById(R.id.text2);
             holder.image = (ImageView) convertView.findViewById(R.id.icon);
+            holder.status = (CheckBox) convertView.findViewById(R.id.checkbox);
             
             // Store the holder object on the row
             convertView.setTag(holder);
         } else {
-            holder = (ImageViewHolder) convertView.getTag();
+            holder = (LayerImageViewHolder) convertView.getTag();
         }
         
         // Reset our row values
@@ -68,6 +70,13 @@ public class LayerListAdapter extends ArrayAdapter<JSONObject> {
         // Load the icon on a background thread
         mLazyLoader.loadImage(holder);
         
+        // Show the layer status
+        if (layer.optBoolean("subscribed")) {
+            holder.status.setChecked(true);
+        } else {
+            holder.status.setChecked(false);
+        }
+        
         // Hide the description TextView if it is empty so
         // the name field will be centered.
         if (TextUtils.isEmpty(holder.text2.getText())) {
@@ -77,5 +86,10 @@ public class LayerListAdapter extends ArrayAdapter<JSONObject> {
         }
         
         return convertView;
+    }
+
+    /** Store the checkbox View for the layer row. */
+    private class LayerImageViewHolder extends ImageViewHolder {
+        CheckBox status;
     }
 }

@@ -15,14 +15,12 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.geoloqi.android.sdk.LQException;
@@ -39,7 +37,8 @@ import com.geoloqi.geonotes.widget.LayerListAdapter;
  * 
  * @author Tristan Waddington
  */
-public class LayerListFragment extends SherlockListFragment implements LQServiceConnection {
+public class LayerListFragment extends SherlockListFragment implements
+        OnItemClickListener, LQServiceConnection {
     private static final String TAG = "LayerListFragment";
     
     private LayerListAdapter mAdapter;
@@ -55,58 +54,28 @@ public class LayerListFragment extends SherlockListFragment implements LQService
         
         // Configure our ListView
         ListView lv = getListView();
-        lv.setFastScrollEnabled(true);
+        lv.setFastScrollEnabled(false);
+        lv.setOnItemClickListener(this);
         
         // Set the default text
         setEmptyText(getString(R.string.empty_activity_list));
-        
-        // Register our context menu
-        registerForContextMenu(lv);
-        
-        LQService service = ((MainActivity) getActivity()).getService();
-        if (service != null) {
-            onServiceConnected(service);
-        }
     }
-    
+
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-            ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
         
-        // Inflate our context menu
-        MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.layer_context_menu, menu);
+        // Toggle the subscribed state of the layer
+        checkbox.toggle();
         
-        // Configure our menu items
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        JSONObject layer = (JSONObject) mAdapter.getItem(info.position);
-        
-        if (layer.optBoolean("subscribed")) {
-            MenuItem unsubscribe = menu.findItem(R.id.unsubscribe);
-            unsubscribe.setEnabled(true);
-        } else {
-            MenuItem subscribe = menu.findItem(R.id.subscribe);
-            subscribe.setEnabled(true);
-        }
-    }
-    
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        JSONObject layer = (JSONObject) mAdapter.getItem(info.position);
-        
-        switch (item.getItemId()) {
-        case R.id.subscribe:
+        JSONObject layer = mAdapter.getItem(position);
+        if (checkbox.isChecked()) {
             subscribeLayer(layer.optString("layer_id"));
-            return true;
-        case R.id.unsubscribe:
+        } else {
             unsubscribeLayer(layer.optString("layer_id"));
-            return true;
         }
-        return false;
     }
-    
+
     /**
      * Subscribe the active user to the indicated layer.
      * @param id
@@ -203,18 +172,6 @@ public class LayerListFragment extends SherlockListFragment implements LQService
                             JSONArray items = json.getJSONArray(key);
                             for (int i = 0; i < items.length(); i++) {
                                 JSONObject layer = items.optJSONObject(i);
-                                
-                                try{
-                                    // TODO: Card layout for layer items with
-                                    //       active/inactive status clearly marked.
-                                    // TODO: Longpress to subscribe/unsubscribe
-                                    //       from a layer.
-                                    // TODO: List item text is being clipped "g".
-                                    Log.d(TAG, layer.toString(2));
-                                } catch (JSONException e) {
-                                    // Pass
-                                }
-                                
                                 layers.put(layer.optString("name"), layer);
                             }
                         }
