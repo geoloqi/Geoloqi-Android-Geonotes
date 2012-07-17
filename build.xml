@@ -96,7 +96,7 @@
     <import file="${sdk.dir}/tools/ant/build.xml" />
 
     <!-- The file to update with the version and build strings. -->
-    <property name="file.geoloqi.build" value="${source.absolute.dir}/com/geoloqi/android/Build.java" />
+    <property name="file.geoloqi.build" value="${source.absolute.dir}/com/geoloqi/geonotes/Build.java" />
 
     <!-- The path to the git executable. -->
     <property name="git.path" value="/usr/bin/git" />
