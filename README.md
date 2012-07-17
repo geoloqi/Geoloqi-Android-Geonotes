@@ -1,6 +1,9 @@
-This is the official Android client application for Geoloqi. It consumes
-the Geoloqi Android SDK and is a good example of what can be accomplished
-using the library.
+This is one of the official Android client applications for Geoloqi. This
+application provides functionality for managing your layers and geonotes.
+It consumes the Geoloqi Android SDK and is one example of what can be
+accomplished using the library.
+
+You can download this application from [Google Play][google-play].
 
 ## Getting Started
 
@@ -26,12 +29,15 @@ near the bottom.
 
 > Note: The previous step may have already been completed for you.
 
+Repeate the steps listed above for the additional ViewPagerIndicator library.
+
 ## License
 
-Copyright 2011 by [Geoloqi.com][geoloqi-site] and contributors.
+Copyright 2012 by [Geoloqi.com][geoloqi-site] and contributors.
 
 See LICENSE.
 
 [geoloqi-site]: https://geoloqi.com/
 [geoloqi-dev-site]: https://developers.geoloqi.com/
 [android-managing-projects]: http://developer.android.com/guide/developing/projects/projects-cmdline.html
+[google-play]: https://play.google.com/store/apps/details?id=com.geoloqi.geonotes
