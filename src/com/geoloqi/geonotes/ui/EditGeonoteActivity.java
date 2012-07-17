@@ -15,6 +15,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,10 +36,11 @@ import com.geoloqi.geonotes.R;
  * @author Tristan Waddington
  */
 public class EditGeonoteActivity extends SherlockActivity implements
-        OnClickListener {
+        OnClickListener, OnItemSelectedListener {
     private static final String TAG = "EditGeonoteActivity";
     private static final int PICK_GEONOTE_REQUEST = 0;
     
+    private String mTriggerOn;
     private double mLatitude = 0;
     private double mLongitude = 0;
     private double mSpan = 0;
@@ -56,6 +60,7 @@ public class EditGeonoteActivity extends SherlockActivity implements
         // Set our onclick listeners
         ((TextView) findViewById(R.id.pick_on_map_button)).setOnClickListener(this);
         ((TextView) findViewById(R.id.submit_button)).setOnClickListener(this);
+        ((Spinner) findViewById(R.id.trigger_on)).setOnItemSelectedListener(this);
     }
     
     @Override
@@ -132,6 +137,10 @@ public class EditGeonoteActivity extends SherlockActivity implements
                             data.put("longitude", mLongitude);
                             data.put("span_longitude", mSpan);
                             
+                            if (!TextUtils.isEmpty(mTriggerOn)) {
+                                data.put("trigger_on", mTriggerOn);
+                            }
+                            
                             // Show a progress dialog
                             mProgressDialog = ProgressDialog.show(this, null, 
                                     getString(R.string.loading_message), true);
@@ -147,6 +156,20 @@ public class EditGeonoteActivity extends SherlockActivity implements
             }
             break;
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position,
+            long id) {
+        String triggerOn = (String) parent.getItemAtPosition(position);
+        if (!TextUtils.isEmpty(triggerOn)) {
+            mTriggerOn = triggerOn.toLowerCase();
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Pass
     }
 
     /**

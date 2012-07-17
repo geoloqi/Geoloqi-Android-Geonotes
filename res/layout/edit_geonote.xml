@@ -29,10 +29,18 @@
                 android:id="@+id/text"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="Message&#8230;"
+                android:hint="Message…"
                 android:inputType="textMultiLine|textShortMessage|textCapSentences|textAutoCorrect"
                 android:maxLength="140"
                 android:maxLines="3" />
+
+            <Spinner
+                android:id="@+id/trigger_on"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/trigger_types"
+                android:spinnerMode="dialog"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/location"

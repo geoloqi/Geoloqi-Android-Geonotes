@@ -2,6 +2,11 @@
 <resources>
     <string name="app_name">Geonotes</string>
     
+    <string-array name="trigger_types">
+        <item>Enter</item>
+        <item>Leave</item>
+    </string-array>
+    
     <!-- Button text -->
     <string name="sign_up_button">Sign Up</string>
     <string name="sign_in_button">Sign In</string>
