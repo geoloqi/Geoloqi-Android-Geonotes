@@ -191,9 +191,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
         if (key.equals(getString(R.string.pref_key_account_username))) {
-            if (LQSharedPreferences.getSessionIsAnonymous(this)) {
-                startActivity(new Intent(this, SignInActivity.class));
-            }
+            startActivity(new Intent(this, SignInActivity.class));
             return true;
         } else if (key.equals(getString(R.string.pref_key_privacy_policy))) {
             Intent intent = new Intent(Intent.ACTION_VIEW,
