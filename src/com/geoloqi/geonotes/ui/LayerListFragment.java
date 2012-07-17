@@ -143,15 +143,18 @@ public class LayerListFragment extends SherlockListFragment implements
     
     @Override
     public void onServiceConnected(LQService service) {
-        LQSession session = service.getSession();
-        
         if (getListAdapter() != null) {
             // Bail out if our list adapter has already
             // been populated!
             return;
         }
+        onRefreshRequested(service);
+    }
+
+    @Override
+    public void onRefreshRequested(LQService service) {
+        LQSession session = service.getSession();
         
-        // TODO: Get the app layer_list!
         session.runGetRequest("layer/app_list", new OnRunApiRequestListener() {
             @Override
             public void onSuccess(LQSession session, JSONObject json,

@@ -169,7 +169,11 @@ public class GeonoteListFragment extends SherlockListFragment implements
             // been populated!
             return;
         }
-        
+        onRefreshRequested(service);
+    }
+
+    @Override
+    public void onRefreshRequested(LQService service) {
         LQSession session = service.getSession();
         session.runGetRequest("geonote/list_set", new OnRunApiRequestListener() {
             @Override

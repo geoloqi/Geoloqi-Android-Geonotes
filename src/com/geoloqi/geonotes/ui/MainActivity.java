@@ -143,6 +143,9 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
         case R.id.menu_create_geonote:
             startActivity(new Intent(this, EditGeonoteActivity.class));
             return true;
+        case R.id.menu_refresh:
+            refreshListFragments();
+            return true;
         }
         return false;
     }
@@ -168,6 +171,22 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
          * successfully bound to the {@link LQService}.
          */
         public void onServiceConnected(LQService service);
+        
+        /**
+         * This callback will be run when the {@link MainActivity} receives
+         * a refresh request from the user. Implementors should attempt
+         * to refresh their content when this method is invoked.
+         */
+        public void onRefreshRequested(LQService service);
+    }
+
+    /** Notify the list fragments that they should refresh. */
+    public void refreshListFragments() {
+        // TODO: Refactor this logic once we implement a background
+        //       sync task.
+        for (Fragment f : mAdapter.getAllItems()) {
+            ((LQServiceConnection) f).onRefreshRequested(mService);
+        }
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -182,11 +201,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
                 
                 // Notify the Fragments that the service has
                 // finished binding.
-                // TODO: Remove this logic once we implement a background
-                //       sync task.
-                for (Fragment f : mAdapter.getAllItems()) {
-                    ((LQServiceConnection) f).onServiceConnected(mService);
-                }
+                refreshListFragments();
             } catch (ClassCastException e) {
                 // Pass
             }

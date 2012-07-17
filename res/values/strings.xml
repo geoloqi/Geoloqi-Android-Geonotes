@@ -33,6 +33,8 @@
     <string name="empty_geonote_list">You have no pending geonotes.</string>
     
     <!-- Menu items -->
+    <string name="menu_create_geonote_title">Create Geonote</string>
+    <string name="menu_refresh_title">Refresh</string>
     <string name="menu_settings_title">Settings</string>
     
     <!-- Preference category titles -->

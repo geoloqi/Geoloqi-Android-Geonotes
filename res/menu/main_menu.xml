@@ -5,10 +5,14 @@
         android:id="@+id/menu_create_geonote"
         android:icon="@drawable/ic_content_new"
         android:showAsAction="always"
-        android:title="Create Geonote"/>
+        android:title="@string/menu_create_geonote_title"/>
+    <item
+        android:id="@+id/menu_refresh"
+        android:icon="@drawable/ic_navigation_refresh"
+        android:title="@string/menu_refresh_title" />
     <item
         android:id="@+id/menu_settings"
-        android:icon="@android:drawable/ic_menu_preferences"
+        android:icon="@drawable/ic_action_settings"
         android:title="@string/menu_settings_title"/>
 
 </menu>

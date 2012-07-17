@@ -72,14 +72,16 @@ public class ActivityListFragment extends SherlockListFragment implements
     
     @Override
     public void onServiceConnected(LQService service) {
-        Log.d(TAG, "onServiceConnected");
-        
         if (getListAdapter() != null) {
             // Bail out if our list adapter has already
             // been populated!
             return;
         }
-        
+        onRefreshRequested(service);
+    }
+
+    @Override
+    public void onRefreshRequested(LQService service) {
         LQSession session = service.getSession();
         session.runGetRequest("timeline/messages", new OnRunApiRequestListener() {
             @Override
