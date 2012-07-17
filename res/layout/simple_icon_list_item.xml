@@ -3,13 +3,18 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal" >
 
-    <!-- TODO: Define the text sizes/colors in teh style.xml file! -->
-    <!-- textColorPrimary, textColorSecondary, textColorPrimaryInverse, textColorSecondaryInverse -->
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="40dp"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="6dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_launcher" />
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:padding="6dp" >
@@ -19,6 +24,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
+            android:lineSpacingMultiplier=".9"
             android:maxLines="1"
             android:singleLine="true"
             android:text="@string/long_lorem"
@@ -38,14 +44,5 @@
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="12sp" />
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="80dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:layout_marginRight="6dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_launcher" />
 
 </LinearLayout>
