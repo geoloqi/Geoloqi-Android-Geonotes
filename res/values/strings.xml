@@ -67,6 +67,7 @@
     <!-- Preference summaries -->
     <string name="start_on_boot_summary">Start the location service automatically</string>
     <string name="vibrate_summary">Vibrate when new items arrive</string>
+    <string name="user_account_summary">Tap to sign in as another user."</string>
     
     <!-- Error messages -->
     <string name="delete_geonote_error">Failed to delete Geonote!</string>
