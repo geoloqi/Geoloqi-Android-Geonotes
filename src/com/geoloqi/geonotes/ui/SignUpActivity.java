@@ -12,6 +12,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -43,6 +44,7 @@ public class SignUpActivity extends SherlockActivity implements OnClickListener 
     /** The email address given by the user. */
     private String mEmail;
 
+    private Handler mHandler = new Handler();
     private ProgressDialog mProgressDialog;
     private LQService mService;
     private boolean mBound;
@@ -118,8 +120,19 @@ public class SignUpActivity extends SherlockActivity implements OnClickListener 
                         try {
                             JSONObject data = new JSONObject();
                             data.put("email", email);
-                            session.runPostRequest("account/set_email", data,
-                                    new OnSignUpListener());
+                            
+                            if (session.isAnonymous()) {
+                                // If the active user is anonymous, simply
+                                // update the existing account with the email.
+                                session.runPostRequest("account/set_email", data,
+                                        new OnSignUpListener());
+                            } else {
+                                // If the active user is not anonymous that
+                                // means another user has previously signed-in
+                                // and we'll need to create a new account.
+                                LQSession.createUserAccount(null, email,
+                                        new OnSignUpListener(), mHandler, this);
+                            }
                         } catch (JSONException e) {
                             Log.e(TAG, "Could not convert email to JSON!", e);
                         }
