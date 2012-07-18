@@ -25,6 +25,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.util.LruCache;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -105,11 +106,13 @@ public class LazyImageLoader {
      * @param holder
      */
     public void loadImage(final ImageViewHolder holder) {
-        Bitmap bitmap = mImageCache.get(holder.imageUrl);
-        if (bitmap != null) {
-            holder.image.setImageBitmap(bitmap);
-        } else {
-            mDownloadExecutor.execute(new ImageDownload(holder));
+        if (!TextUtils.isEmpty(holder.imageUrl)) {
+            Bitmap bitmap = mImageCache.get(holder.imageUrl);
+            if (bitmap != null) {
+                holder.image.setImageBitmap(bitmap);
+            } else {
+                mDownloadExecutor.execute(new ImageDownload(holder));
+            }
         }
     }
     
