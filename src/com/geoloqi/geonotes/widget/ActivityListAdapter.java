@@ -58,7 +58,7 @@ public class ActivityListAdapter extends ArrayAdapter<JSONObject> {
         // Reset our row values
         holder.text1.setText("");
         holder.text2.setText("");
-        holder.image.setImageDrawable(null);
+        holder.image.setImageResource(R.drawable.default_icon);
         
         // Populate our data
         JSONObject message = getItem(position);
