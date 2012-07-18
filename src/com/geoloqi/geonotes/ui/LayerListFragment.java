@@ -155,6 +155,13 @@ public class LayerListFragment extends SherlockListFragment implements
     public void onRefreshRequested(LQService service) {
         LQSession session = service.getSession();
         
+        if (session == null) {
+            // Bail!
+            // TODO: This is a huge hack. We should always return a valid
+            //       session from LQService.
+            return;
+        }
+        
         session.runGetRequest("layer/app_list", new OnRunApiRequestListener() {
             @Override
             public void onSuccess(LQSession session, JSONObject json,
