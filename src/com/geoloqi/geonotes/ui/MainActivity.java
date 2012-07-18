@@ -102,7 +102,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnClickLis
         
         // Bind to the tracking service so we can call public methods on it
         Intent intent = new Intent(this, LQService.class);
-        bindService(intent, mConnection, 0);
+        bindService(intent, mConnection, BIND_AUTO_CREATE);
         
         // Prompt anonymous users to register
         View authNotice = findViewById(R.id.auth_notice);
