@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -39,6 +40,8 @@ public class MessageDetailActivity extends SherlockMapActivity {
     private static final int DEFAULT_MAP_ZOOM = 17;
 
     private JSONObject mMessage;
+    private JSONObject mMessageActor;
+    private JSONObject mMessageObject;
     
     private MapView mMapView;
     private GeoPoint mMapCenter;
@@ -56,27 +59,31 @@ public class MessageDetailActivity extends SherlockMapActivity {
             // Get the activity object
             mMessage = new JSONObject(intent.getStringExtra(EXTRA_JSON));
             
-            JSONObject actor = mMessage.getJSONObject("actor");
-            JSONObject location = mMessage.getJSONObject("location");
-            JSONObject object = mMessage.getJSONObject("object");
+            mMessageActor = mMessage.getJSONObject("actor");
+            mMessageObject = mMessage.getJSONObject("object");
+            JSONObject location = mMessage.optJSONObject("location");
             
-            // Display our location name
-            TextView nameView = (TextView) findViewById(R.id.location_name);
-            if (nameView != null) {
-                nameView.setText(location.optString("displayName"));
+            if (location != null) {
+                // Display our location name
+                TextView nameView = (TextView) findViewById(R.id.location_name);
+                if (nameView != null) {
+                    nameView.setText(location.optString("displayName"));
+                }
+            } else {
+                mMapView.setVisibility(View.GONE);
             }
             
             // Display our summary text
             TextView summaryView = (TextView) findViewById(R.id.summary_text);
             if (summaryView != null) {
-                summaryView.setText(object.optString("summary"));
+                summaryView.setText(mMessageObject.optString("summary"));
             }
             
             // Display our date and actor info
             TextView dateView = (TextView) findViewById(R.id.actor_text);
             if (dateView != null) {
                 dateView.setText(String.format("%s | %s",
-                        mMessage.optString("displayDate"), actor.optString("displayName")));
+                        mMessage.optString("displayDate"), mMessageActor.optString("displayName")));
             }
             
             // Display our map
@@ -100,7 +107,7 @@ public class MessageDetailActivity extends SherlockMapActivity {
                     getResources().getDrawable(R.drawable.marker));
             
             OverlayItem geonote = new OverlayItem(mMapCenter,
-                    location.optString("displayName"), object.optString("summary"));
+                    location.optString("displayName"), mMessageObject.optString("summary"));
             geonoteOverlay.addOverlay(geonote);
             
             // Add the geonote to our MapView as an overlay
@@ -125,7 +132,7 @@ public class MessageDetailActivity extends SherlockMapActivity {
         super.onCreateOptionsMenu(menu);
         
         MenuInflater inflater = getSupportMenuInflater();
-        inflater.inflate(R.menu.settings_menu, menu);
+        inflater.inflate(R.menu.message_detail_menu, menu);
         
         return true;
     }
@@ -135,6 +142,18 @@ public class MessageDetailActivity extends SherlockMapActivity {
         switch (item.getItemId()) {
         case android.R.id.home:
             startActivity(new Intent(this, MainActivity.class));
+            return true;
+        case R.id.menu_share:
+            String message = mMessageObject.optString("summary");
+            String url = mMessage.optString("url");
+            String text = String.format("%s: %s", message, url);
+            
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.setType("text/plain");
+            share.putExtra(Intent.EXTRA_TEXT, text);
+            startActivity(Intent.createChooser(share,
+                    getString(R.string.menu_share_title)));
+            
             return true;
         case R.id.menu_settings:
             startActivity(new Intent(this, SettingsActivity.class));

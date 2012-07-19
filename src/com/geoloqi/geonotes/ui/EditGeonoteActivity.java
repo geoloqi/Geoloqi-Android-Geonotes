@@ -21,7 +21,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -220,7 +219,6 @@ public class EditGeonoteActivity extends SherlockActivity implements
             
             // Get our views
             final TextView regionName = (TextView) findViewById(R.id.region_name);
-            final ProgressBar progressIndicator = (ProgressBar) findViewById(R.id.region_progress);
             
             // Build our query string
             Map<String, String> args = new HashMap<String, String>();
@@ -236,20 +234,15 @@ public class EditGeonoteActivity extends SherlockActivity implements
                     if (!TextUtils.isEmpty(best)) {
                         regionName.setText(best);
                     }
-                    
-                    // Hide the progress indicator
-                    progressIndicator.setVisibility(View.GONE);
                 }
                 @Override
                 public void onFailure(LQSession session, LQException e) {
-                    // Hide the progress indicator
-                    progressIndicator.setVisibility(View.GONE);
+                    // Pass
                 }
                 @Override
                 public void onComplete(LQSession session, JSONObject json,
                         Header[] headers, StatusLine status) {
-                    // Hide the progress indicator
-                    progressIndicator.setVisibility(View.GONE);
+                    // Pass
                 }
             });
         }
