@@ -1,5 +1,8 @@
 package com.geoloqi.geonotes.ui;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.http.Header;
 import org.apache.http.StatusLine;
 import org.json.JSONException;
@@ -15,8 +18,10 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,7 +74,7 @@ public class EditGeonoteActivity extends SherlockActivity implements
         
         // Bind to the tracking service so we can call public methods on it
         Intent intent = new Intent(this, LQService.class);
-        bindService(intent, mConnection, 0);
+        bindService(intent, mConnection, BIND_AUTO_CREATE);
     }
     
     @Override
@@ -184,13 +189,70 @@ public class EditGeonoteActivity extends SherlockActivity implements
         mLongitude = lng;
         mSpan = span;
         
-        // Display the selection
-        TextView location = (TextView) findViewById(R.id.location);
+        // Show the selected lat/long
+        TextView location = (TextView) findViewById(R.id.region_lat_long);
         location.setText(String.format("%s,%s", lat, lng));
-        location.setVisibility(View.VISIBLE);
         
-        // Toggle our button state
+        // Display the selected region
+        ViewGroup region = (ViewGroup) findViewById(R.id.region);
+        region.setVisibility(View.VISIBLE);
+        
+        // Enable the submit button
         findViewById(R.id.submit_button).setEnabled(true);
+    }
+
+    /**
+     * Display the best region name for the area selected by
+     * the user.
+     */
+    private void showBestRegionName() {
+        boolean validRegion = ((mLatitude + mLongitude) != 0);
+        
+        if (validRegion) {
+            LQSession session = mService.getSession();
+            
+            if (session == null) {
+                // Bail!
+                // TODO: This is a huge hack. We should always return a valid
+                //       session from LQService.
+                return;
+            }
+            
+            // Get our views
+            final TextView regionName = (TextView) findViewById(R.id.region_name);
+            final ProgressBar progressIndicator = (ProgressBar) findViewById(R.id.region_progress);
+            
+            // Build our query string
+            Map<String, String> args = new HashMap<String, String>();
+            args.put("latitude", String.valueOf(mLatitude));
+            args.put("longitude", String.valueOf(mLongitude));
+            
+            // Perform the request
+            session.runGetRequest("location/context", args, null, new OnRunApiRequestListener() {
+                @Override
+                public void onSuccess(LQSession session, JSONObject json,
+                        Header[] headers) {
+                    String best = json.optString("best_name");
+                    if (!TextUtils.isEmpty(best)) {
+                        regionName.setText(best);
+                    }
+                    
+                    // Hide the progress indicator
+                    progressIndicator.setVisibility(View.GONE);
+                }
+                @Override
+                public void onFailure(LQSession session, LQException e) {
+                    // Hide the progress indicator
+                    progressIndicator.setVisibility(View.GONE);
+                }
+                @Override
+                public void onComplete(LQSession session, JSONObject json,
+                        Header[] headers, StatusLine status) {
+                    // Hide the progress indicator
+                    progressIndicator.setVisibility(View.GONE);
+                }
+            });
+        }
     }
 
     /**
@@ -255,6 +317,9 @@ public class EditGeonoteActivity extends SherlockActivity implements
                 LQBinder binder = (LQBinder) service;
                 mService = binder.getService();
                 mBound = true;
+                
+                // Show the selected region name
+                showBestRegionName();
             } catch (ClassCastException e) {
                 // Pass
             }
