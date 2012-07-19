@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +78,16 @@ public class MessageDetailActivity extends SherlockMapActivity {
             TextView summaryView = (TextView) findViewById(R.id.summary_text);
             if (summaryView != null) {
                 summaryView.setText(mMessageObject.optString("summary"));
+            }
+            
+            // Display our source url
+            TextView sourceView = (TextView) findViewById(R.id.source_text);
+            if (sourceView != null) {
+                String sourceUrl = mMessageObject.optString("sourceURL");
+                if (!TextUtils.isEmpty(sourceUrl)) {
+                    sourceView.setText(sourceUrl);
+                    sourceView.setVisibility(View.VISIBLE);
+                }
             }
             
             // Display our date and actor info
