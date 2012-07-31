@@ -29,7 +29,10 @@ near the bottom.
 
 > Note: The previous step may have already been completed for you.
 
-Repeate the steps listed above for the additional ViewPagerIndicator library.
+Repeat the steps listed above for the additional ViewPagerIndicator library.
+It may be necessary to adjust the Android platform version to 4.x for
+the ViewPagerIndicator library if Eclipse cannot find the TabPagerIndicator
+class.
 
 ## License
 
