@@ -8,7 +8,7 @@ You can download this application from [Google Play][google-play].
 ## Getting Started
 
 The ActionBarSherlock library is included as a Git submodule. You'll need to
-import this project into Eclipse and make sure the Geoloqi-Android-Official
+import this project into Eclipse and make sure the Geoloqi-Android-Geonotes
 project references it as a library.
 
 First make sure you've updated the submodule repositories:
@@ -22,7 +22,7 @@ Then, using Eclipse, select `File -> New -> Android Project` and choose
 "Create project from existing source." Name the project "ActionBarSherlock"
 and click finish.
 
-Next, right-click on the parent project Geoloqi-Android-Official and select
+Next, right-click on the parent project Geoloqi-Android-Geonotes and select
 "Preferences." Navigate to the "Android" section in the sidebar. If necessary,
 add the new "ActionBarSherlock" project as a library to the "Library" section
 near the bottom.
